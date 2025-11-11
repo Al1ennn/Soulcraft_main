@@ -2,9 +2,68 @@ body {
     font-family: sans-serif;
     background-color: #f4f4f4;
     text-align: center;
-    padding: 50px;
+    padding-top: 50px;
+    
+    /* Скидаємо відступи, щоб header прилягав гарно */
+    margin: 0; 
 }
 
 h1 {
-    color: #5a3d70; /* Գ��������, �� Soulcraft :) */
+    color: #5a3d70; /* Фіолетовий, як Soulcraft :) */
+}
+
+/* --- Нові стилі для навігації та сторінок --- */
+
+header {
+    background-color: #fff;
+    border-bottom: 1px solid #ddd;
+    padding: 10px 0;
+    
+    /* Прибиваємо header до верху сторінки */
+    position: fixed; /* Або 'absolute', якщо не хочете фіксації */
+    top: 0;
+    left: 0;
+    width: 100%;
+}
+
+nav {
+    width: 90%;
+    max-width: 1000px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between; /* Лого зліва, кнопки справа */
+    align-items: center;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: bold;
+    color: #5a3d70;
+    text-decoration: none;
+}
+
+main {
+    width: 90%;
+    max-width: 1000px;
+    margin: 20px auto;
+    
+    /* Додаємо відступ зверху, щоб наш 'main' не ховався під 'header' */
+    margin-top: 100px; 
+}
+
+.button {
+    display: inline-block;
+    padding: 10px 15px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    border: 1px solid #ddd; /* Додамо рамку для звичайної кнопки */
+    color: #333;
+    margin-left: 10px; /* Додамо відступ між кнопками */
+}
+
+.button-primary {
+    background-color: #5a3d70;
+    color: #fff;
+    border: 1px solid #5a3d70;
 }
