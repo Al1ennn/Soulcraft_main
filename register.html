@@ -12,13 +12,20 @@
         </nav>
     </header>
 
-    <main>
-        <h1>Сторінка Реєстрації</h1>
-        <p>Наразі це просто демонстраційна сторінка.</p>
-        <p>Скоро тут буде форма реєстрації.</p>
-
-        <a href="index.html">Повернутись на Головну</a>
+    <main class="form-container">
+        <h1>Створити акаунт</h1>
+        
+        <form action="dashboard.html">
+            <label for="email">Ваш Email</label>
+            <input type="email" id="email" name="email" placeholder="example@gmail.com" required>
+            
+            <label for="password">Пароль</label>
+            <input type="password" id="password" name="password" placeholder="Ваш пароль" required>
+            
+            <button type="submit" class="button button-primary">Зареєструватись</button>
+        </form>
+        
+        <p>Вже маєте акаунт? <a href="login.html">Увійти</a></p>
     </main>
-
 </body>
 </html>
