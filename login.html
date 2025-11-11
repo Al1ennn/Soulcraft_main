@@ -12,13 +12,20 @@
         </nav>
     </header>
 
-    <main>
-        <h1>Сторінка Входу</h1>
-        <p>Наразі це просто демонстраційна сторінка.</p>
-        <p>Скоро тут буде форма входу.</p>
+    <main class="form-container">
+        <h1>Вхід в акаунт</h1>
         
-        <a href="index.html">Повернутись на Головну</a>
+        <form action="dashboard.html">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" placeholder="example@gmail.com" required>
+            
+            <label for="password">Пароль</label>
+            <input type="password" id="password" name="password" placeholder="Ваш пароль" required>
+            
+            <button type="submit" class="button button-primary">Увійти</button>
+        </form>
+        
+        <p>Немає акаунту? <a href="register.html">Створити</a></p>
     </main>
-
 </body>
 </html>
