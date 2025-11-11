@@ -15,7 +15,8 @@
     <main class="form-container">
         <h1>Вхід в акаунт</h1>
         
-        <form action="dashboard.html">
+        <!-- Ми прибрали 'action' з форми -->
+        <form id="login-form">
             <label for="email">Email</label>
             <input type="email" id="email" name="email" placeholder="example@gmail.com" required>
             
@@ -27,5 +28,52 @@
         
         <p>Немає акаунту? <a href="register.html">Створити</a></p>
     </main>
+
+    <!-- ======== БЛОК FIREBASE ======== -->
+    
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+
+    <script>
+        // 1. ВАШІ КЛЮЧІ FIREBASE (ті самі, що й на сторінці реєстрації)
+        const firebaseConfig = {
+          apiKey: "AIzaSyDI1y9z3JqGwjOYacWsHZgPhU038YBz9pA",
+          authDomain: "soulcraft-project.firebaseapp.com",
+          projectId: "soulcraft-project",
+          storageBucket: "soulcraft-project.firebasestorage.app",
+          messagingSenderId: "442181022403",
+          appId: "1:442181022403:web:590c4523ebcc12213c2876"
+        };
+
+        // 2. Ініціалізуємо Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+
+        // 3. Знаходимо форму входу
+        const loginForm = document.getElementById('login-form');
+
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const email = loginForm.email.value;
+            const password = loginForm.password.value;
+
+            // 4. Входимо в систему (магія!)
+            auth.signInWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    // Успіх! Користувач увійшов.
+                    alert("Успішний вхід! Вітаємо.");
+                    window.location.href = "dashboard.html";
+                })
+                .catch((error) => {
+                    // Помилка!
+                    console.error("Помилка входу:", error);
+                    // Показуємо користувачу помилку (наприклад, "Wrong password" or "User not found")
+                    alert("Помилка: " + error.message);
+                });
+        });
+    </script>
+    <!-- ======== КІНЕЦЬ БЛОКУ FIREBASE ======== -->
+
 </body>
 </html>
