@@ -67,3 +67,36 @@ main {
     color: #fff;
     border: 1px solid #5a3d70;
 }
+/* --- Додайте це в кінець style.css --- */
+
+.form-container {
+    max-width: 400px;
+    margin: 100px auto; /* '100px' зверху, бо header фіксований */
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    text-align: left; /* Вирівнюємо текст у формі по лівому краю */
+}
+
+.form-container label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.form-container input[type="email"],
+.form-container input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-sizing: border-box; /* Важливо для 'width: 100%' */
+}
+
+.form-container button {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+}
