@@ -377,23 +377,33 @@ footer {
     display: none; /* Ховаємо, поки не завантажиться */
 }
 
+/* КОНТЕЙНЕР ЗАГЛУШКИ: ДОДАНО position: relative */
 .profile-pic-placeholder {
     width: 200px;
     height: 200px;
     border-radius: 50%;
     background-color: #101010;
     border: 4px dashed var(--color-secondary);
+    
+    position: relative; /* Ключова зміна 1: для абсолютного позиціювання SVG */
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-/* ВИПРАВЛЕННЯ ЦЕНТРУВАННЯ SVG: */
+/* ВИПРАВЛЕННЯ ЦЕНТРУВАННЯ SVG: ВИКОРИСТАННЯ АБСОЛЮТНОГО ПОЗИЦІЮВАННЯ */
 .profile-pic-placeholder svg {
     width: 80px; 
     height: 80px;
     color: var(--color-secondary);
-    /* Додаємо display: block, щоб забезпечити коректне центрування інлайн-елемента в Flexbox */
+    
+    /* Ключова зміна 2: Абсолютне позиціювання для примусового центрування */
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto; /* Додатковий спосіб центрування з абсолютним позиціюванням */
     display: block; 
 }
 
