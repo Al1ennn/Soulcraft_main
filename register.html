@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Реєстрація - Soulcraft</title>
     <link rel="stylesheet" href="style.css">
+    <!-- Додаємо шрифти -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Lato:wght@300;400&display=swap" rel="stylesheet">
@@ -33,6 +34,7 @@
         <p>Вже маєте акаунт? <a href="login.html">Увійти</a></p>
     </main>
 
+    <!-- ======== ПОЧАТОК БЛОКУ FIREBASE ======== -->
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
 
@@ -58,24 +60,34 @@
 
             auth.createUserWithEmailAndPassword(email, password)
                 .then((userCredential) => {
-                    // Успіх! Користувач створений.
+                    console.log("Користувач створений, відправляю лист...");
                     
-                    // --- НОВИЙ КРОК: ВІДПРАВЛЯЄМО ЛИСТ ---
-                    userCredential.user.sendEmailVerification()
+                    // 
+                    // --- ОНОВЛЕНО: Ми додаємо 'actionCodeSettings' ---
+                    // 
+                    // Це каже Firebase: "Після підтвердження, поверни користувача на 'login.html'"
+                    const actionCodeSettings = {
+                        url: 'https://al1ennn.github.io/Soulcraft_main/login.html'
+                    };
+
+                    userCredential.user.sendEmailVerification(actionCodeSettings) // <--- МИ ДОДАЛИ ЦЕ СЮДИ
                         .then(() => {
                             // Лист відправлено.
                             alert("Реєстрація успішна! Ми відправили вам на пошту лист для підтвердження акаунту. Будь ласка, перейдіть за посиланням у ньому.");
-                            // Відправляємо на сторінку входу
                             window.location.href = "login.html";
+                        })
+                        .catch((emailError) => {
+                            console.error("Помилка відправки листа:", emailError);
+                            alert("Помилка відправки листа: " + emailError.message);
                         });
                     
                 })
                 .catch((error) => {
-                    // Помилка! (наприклад, "email-already-in-use")
                     console.error("Помилка реєстрації:", error);
-                    alert("Помилка: " + error.message);
+                    alert("Помилка реєстрації: " + error.message);
                 });
         });
     </script>
-    </body>
+    <!-- ======== КІНЕЦЬ БЛОКУ FIREBASE ======== -->
+</body>
 </html>
