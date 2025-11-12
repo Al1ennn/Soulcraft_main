@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Вхід - Soulcraft</title>
     <link rel="stylesheet" href="style.css">
+    <!-- Додаємо шрифти -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Lato:wght@300;400&display=swap" rel="stylesheet">
@@ -39,6 +40,7 @@
         
     </main>
 
+    <!-- ======== ПОЧАТОК БЛОКУ FIREBASE ======== -->
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
 
@@ -60,9 +62,7 @@
         const loginForm = document.getElementById('login-form');
         const resendLink = document.getElementById('resend-verification-link');
 
-        // 
-        // --- ОНОВЛЕНА ЛОГІКА ВХОДУ ---
-        // 
+        // ЛОГІКА ВХОДУ
         loginForm.addEventListener('submit', (e) => {
             e.preventDefault();
             const email = loginForm.email.value;
@@ -72,14 +72,13 @@
                 .then((userCredential) => {
                     
                     if (userCredential.user.emailVerified) {
-                        // 1. Пошта підтверджена, пускаємо в кабінет
+                        // 1. Пошта підтверджена
                         alert("Успішний вхід! Вітаємо.");
                         window.location.href = "dashboard.html";
                     } else {
                         // 2. Пошта НЕ підтверджена
                         alert("Ваша пошта ще не підтверджена. Будь ласка, перевірте лист у скринці або натисніть 'Надіслати повторно' нижче.");
-                        // МИ БІЛЬШЕ НЕ РОБИМО auth.signOut()!
-                        // Користувач залишається "залогіненим", щоб отримати новий лист.
+                        // Не робимо signOut(), щоб користувач міг натиснути "Надіслати повторно"
                     }
 
                 })
@@ -89,17 +88,23 @@
         });
 
         // 
-        // --- ОНОВЛЕНА ЛОГІКА ПОВТОРНОЇ ВІДПРАВКИ ---
+        // --- ОНОВЛЕНО: ЛОГІКА ПОВТОРНОЇ ВІДПРАВКИ ---
         // 
         resendLink.addEventListener('click', (e) => {
             e.preventDefault();
             
-            // Беремо поточного користувача (який щойно спробував увійти)
             const user = auth.currentUser;
             
             if (user) {
-                 // Користувач залогінений (але не верифікований), ми можемо надіслати лист
-                 user.sendEmailVerification()
+                 // Користувач залогінений (але не верифікований)
+
+                 // --- ОНОВЛЕНО: Додаємо actionCodeSettings ---
+                 // (Щоб посилання вело назад на сторінку входу)
+                 const actionCodeSettings = {
+                    url: 'https://al1ennn.github.io/Soulcraft_main/login.html'
+                 };
+
+                 user.sendEmailVerification(actionCodeSettings) // <--- ДОДАЛИ НАЛАШТУВАННЯ
                     .then(() => {
                         alert("Новий лист з підтвердженням відправлено на вашу пошту! Будь ласка, перевірте її (та папку Спам).");
                     })
@@ -112,5 +117,6 @@
             }
         });
     </script>
-    </body>
+    <!-- ======== КІНЕЦЬ БЛОКУ FIREBASE ======== -->
+</body>
 </html>
