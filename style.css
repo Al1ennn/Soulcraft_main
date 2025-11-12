@@ -1,35 +1,57 @@
 /* ---------------------------------- */
 /* ЗАГАЛЬНІ НАЛАШТУВАННЯ */
 /* ---------------------------------- */
-body {
-    /* ОСЬ ТУТ МИ ДОДАЛИ ВАШ ФОН!
-      Він буде розтягнутий на весь екран і зафіксований.
-    */
-    background-image: url('parchment.jpg');
-    background-size: cover;
-    background-attachment: fixed;
-    background-position: center;
+:root {
+    /* Наша нова палітра кольорів */
+    --color-bg: #121212; /* Дуже темний, майже чорний фон */
+    --color-surface: #1a1a1a; /* Фон для карток */
+    --color-primary: #e0ca9a; /* Основний золотий колір (як у лого) */
+    --color-secondary: #9a8c78; /* Приглушений золотий */
+    --color-text: #cccccc; /* Основний текст (світло-сірий) */
     
-    /* Основний колір тексту - темно-коричневий */
-    color: #4a3c2a;
-    font-family: 'Noto Sans', sans-serif;
+    /* Наші нові шрифти */
+    --font-title: 'Cinzel', serif; /* Декоративний, "магічний" шрифт */
+    --font-body: 'Lato', sans-serif; /* Читабельний шрифт для тексту */
+}
+
+body {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-body);
     margin: 0;
     padding: 0;
+    line-height: 1.6;
+}
+
+h1, h2, h3 {
+    font-family: var(--font-title);
+    color: var(--color-primary);
+    font-weight: 700;
+}
+
+a {
+    color: var(--color-primary);
+    text-decoration: none;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
 }
 
 /* ---------------------------------- */
 /* HEADER (Навігація) */
 /* ---------------------------------- */
 header {
-    /* Робимо header напівпрозорим, щоб було видно фон */
-    background-color: rgba(245, 235, 215, 0.7); /* Напівпрозорий колір пергаменту */
-    backdrop-filter: blur(5px); /* Ефект розмиття */
-    padding: 15px 0;
+    background-color: rgba(18, 18, 18, 0.8); /* Напівпрозорий фон */
+    backdrop-filter: blur(10px);
+    padding: 20px 0;
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
-    border-bottom: 1px solid rgba(140, 109, 60, 0.3); /* Тонка рамка */
+    z-index: 1000;
+    border-bottom: 1px solid #2a2a2a;
 }
 
 nav {
@@ -41,115 +63,219 @@ nav {
     align-items: center;
 }
 
-/* Стиль для текстового лого в навігації (замість .logo) */
 .logo-nav {
-    font-family: 'Cormorant Garamond', serif;
+    font-family: var(--font-title);
     font-size: 28px;
     font-weight: 700;
-    color: #5a421a;
+    color: var(--color-primary);
     text-decoration: none;
-    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
+    letter-spacing: 1px;
 }
 
 .button {
     display: inline-block;
     padding: 10px 20px;
-    text-decoration: none;
     border-radius: 5px;
     font-weight: bold;
     font-size: 16px;
-    /* Обводка кольором темного золота */
-    border: 2px solid #8c6d3c; 
-    color: #8c6d3c;
+    border: 2px solid var(--color-primary); 
+    color: var(--color-primary);
     margin-left: 10px;
     transition: all 0.3s ease;
 }
 
 .button:hover {
-    background-color: rgba(140, 109, 60, 0.1);
+    background-color: var(--color-primary);
+    color: var(--color-bg);
 }
 
 .button-primary {
-    /* Кнопка "Реєстрація" - залита */
-    background-color: #8c6d3c;
-    color: #f5ebd7; /* Світлий колір пергаменту */
+    background-color: var(--color-primary);
+    color: var(--color-bg);
 }
 
 .button-primary:hover {
-    background-color: #5a421a;
-    border-color: #5a421a;
+    background-color: transparent;
+    color: var(--color-primary);
 }
 
 /* ---------------------------------- */
-/* ГОЛОВНА СТОРІНКА (Hero) */
+/* HERO SECTION (Головний екран) */
 /* ---------------------------------- */
 .hero-section {
     min-height: 100vh;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     text-align: center;
+    
+    /* Крутий фон - темна текстура майстерні/алхіміка */
+    background-image: linear-gradient(rgba(18, 18, 18, 0.8), rgba(18, 18, 18, 1)), url('https://images.unsplash.com/photo-1542189345-0593688175b9?q=80&w=1974&auto=format&fit=crop');
+    background-size: cover;
+    background-position: center;
+    padding: 0 20px;
 }
 
-.hero-content {
-    /* Додаємо легку тінь, щоб текст був читабельний */
-    text-shadow: 0 2px 4px rgba(255, 255, 255, 0.3);
-}
-
-/* СТИЛЬ ДЛЯ ВАШОГО ЛОГОТИПУ 'logo.jpg' */
 .hero-logo {
-    max-width: 250px; /* Розмір лого */
+    max-width: 250px;
     height: auto;
-    margin-bottom: 15px;
-    border-radius: 50%; /* Робимо круглим */
-    border: 4px solid #c9a87c; /* Рамка в стилі пергаменту */
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); /* Тінь */
+    margin-bottom: 10px;
+    /* Замість круга, робимо м'яку тінь, що світиться */
+    filter: drop-shadow(0 0 25px rgba(224, 202, 154, 0.4));
+    border-radius: 50%; /* Залишаємо круг, як у лого */
+    border: 2px solid var(--color-primary);
 }
 
 .hero-title {
-    font-family: 'Cormorant Garamond', serif;
     font-size: 72px;
-    color: #5a421a; /* Темно-коричневий */
-    margin: 0;
-    font-weight: 700;
+    margin: 10px 0;
+    letter-spacing: 2px;
+    text-shadow: 0 0 15px rgba(224, 202, 154, 0.5);
 }
 
 .hero-slogan {
-    font-family: 'Noto Sans', sans-serif;
-    font-weight: 400; 
+    font-family: var(--font-body);
+    font-weight: 300; 
     font-size: 24px;
-    color: #6b532c;
+    color: var(--color-text);
     margin-top: 10px;
     letter-spacing: 1px;
 }
 
+/* Анімація для стрілки "вниз" */
+.scroll-down {
+    position: absolute;
+    bottom: 30px;
+    color: var(--color-primary);
+    animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-15px);
+    }
+    60% {
+        transform: translateY(-10px);
+    }
+}
+
+/* ---------------------------------- */
+/* ЗАГАЛЬНІ СЕКЦІЇ */
+/* ---------------------------------- */
+.content-section, .featured-section, .cta-section {
+    padding: 80px 5%;
+    max-width: 1200px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.content-section h2, .featured-section h2, .cta-section h2 {
+    font-size: 42px;
+    margin-bottom: 20px;
+}
+
+.content-section p, .cta-section p {
+    font-size: 18px;
+    max-width: 700px;
+    margin: 0 auto 30px auto;
+    line-height: 1.7;
+}
+
+/* ---------------------------------- */
+/* FEATURED SECTION (Галерея) */
+/* ---------------------------------- */
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    margin-top: 40px;
+}
+
+.gallery-card {
+    background-color: var(--color-surface);
+    border-radius: 10px;
+    overflow: hidden;
+    text-align: left;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.gallery-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 0 30px rgba(224, 202, 154, 0.3);
+}
+
+.gallery-card img {
+    width: 100%;
+    height: 350px;
+    object-fit: cover;
+    display: block;
+    border-bottom: 2px solid var(--color-primary);
+}
+
+.card-content {
+    padding: 25px;
+}
+
+.card-content h3 {
+    font-size: 24px;
+    margin: 0 0 10px 0;
+}
+
+.card-content p {
+    font-size: 16px;
+    color: var(--color-secondary);
+    margin: 0;
+}
+
+/* ---------------------------------- */
+/* CTA та FOOTER */
+/* ---------------------------------- */
+.cta-section {
+    background-color: var(--color-surface);
+    border-radius: 10px;
+    margin-top: 40px;
+}
+
+footer {
+    text-align: center;
+    padding: 40px 20px;
+    margin-top: 40px;
+    border-top: 1px solid #2a2a2a;
+    color: var(--color-secondary);
+}
+
 /* ---------------------------------- */
 /* СТИЛІ ДЛЯ ФОРМ (Вхід/Реєстрація) */
+/* (Вони теж оновлені під темний стиль) */
 /* ---------------------------------- */
-/* (Цей код такий самий, як я надсилав раніше, він вже пасує до стилю) */
 .form-container {
     max-width: 400px;
-    margin: 100px auto;
-    padding: 30px;
-    /* Фон для форм - напівпрозорий пергамент */
-    background-color: rgba(245, 235, 215, 0.9);
-    border-radius: 8px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+    margin: 150px auto 50px auto; /* Збільшили відступ зверху */
+    padding: 40px;
+    background-color: var(--color-surface);
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
     text-align: left;
-    border: 1px solid rgba(140, 109, 60, 0.4);
+    border: 1px solid #2a2a2a;
 }
 
 .form-container h1 {
-    font-family: 'Cormorant Garamond', serif;
-    color: #5a421a;
     text-align: center;
+    font-size: 36px;
+    margin-bottom: 30px;
 }
 
 .form-container label {
     display: block;
-    margin-bottom: 5px;
+    margin-bottom: 8px;
     font-weight: bold;
-    color: #6b532c;
+    color: var(--color-secondary);
+    font-size: 14px;
 }
 
 .form-container input[type="email"],
@@ -157,12 +283,19 @@ nav {
     width: 100%;
     padding: 12px;
     margin-bottom: 20px;
-    border: 1px solid #c9a87c;
+    border: 1px solid #3a3a3a;
     border-radius: 5px;
     box-sizing: border-box; 
-    background-color: #fff; /* Чистий білий фон для полів */
-    color: #4a3c2a;
+    background-color: #101010;
+    color: var(--color-text);
     font-size: 16px;
+}
+
+.form-container input[type="email"]:focus,
+.form-container input[type="password"]:focus {
+    border-color: var(--color-primary);
+    outline: none;
+    box-shadow: 0 0 10px rgba(224, 202, 154, 0.2);
 }
 
 .form-container button {
@@ -172,22 +305,24 @@ nav {
     border-radius: 5px;
     font-weight: bold;
     border: none;
-    background-color: #8c6d3c;
-    color: #f5ebd7;
+    background-color: var(--color-primary);
+    color: var(--color-bg);
     cursor: pointer;
     transition: all 0.3s ease;
 }
 
 .form-container button:hover {
-    background-color: #5a421a;
+    opacity: 0.9;
+    box-shadow: 0 0 15px rgba(224, 202, 154, 0.4);
 }
 
 .form-container p {
     text-align: center;
-    margin-top: 15px;
+    margin-top: 20px;
+    color: var(--color-secondary);
 }
 .form-container a {
-    color: #8c6d3c;
+    color: var(--color-primary);
     text-decoration: none;
     font-weight: bold;
 }
