@@ -34,7 +34,7 @@
         <p>Вже маєте акаунт? <a href="login.html">Увійти</a></p>
     </main>
 
-    <!-- ======== ПОЧАТОК БЛОКУ FIREBASE ======== -->
+    <!-- ======== БЛОК FIREBASE ======== -->
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
 
@@ -62,23 +62,21 @@
                 .then((userCredential) => {
                     console.log("Користувач створений, відправляю лист...");
                     
-                    // 
-                    // --- ОНОВЛЕНО: Ми додаємо 'actionCodeSettings' ---
-                    // 
-                    // Це каже Firebase: "Після підтвердження, поверни користувача на 'login.html'"
+                    // --- ВИПРАВЛЕНО: actionCodeSettings для правильного повернення ---
                     const actionCodeSettings = {
+                        // Це каже Firebase, куди повернути користувача після підтвердження
                         url: 'https://al1ennn.github.io/Soulcraft_main/login.html'
                     };
 
-                    userCredential.user.sendEmailVerification(actionCodeSettings) // <--- МИ ДОДАЛИ ЦЕ СЮДИ
+                    userCredential.user.sendEmailVerification(actionCodeSettings)
                         .then(() => {
-                            // Лист відправлено.
                             alert("Реєстрація успішна! Ми відправили вам на пошту лист для підтвердження акаунту. Будь ласка, перейдіть за посиланням у ньому.");
                             window.location.href = "login.html";
                         })
                         .catch((emailError) => {
                             console.error("Помилка відправки листа:", emailError);
-                            alert("Помилка відправки листа: " + emailError.message);
+                            alert("Помилка відправки листа: " + emailError.message + ". Будь ласка, спробуйте увійти.");
+                            userCredential.user.delete();
                         });
                     
                 })
