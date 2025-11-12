@@ -5,17 +5,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Особистий кабінет - SoulCraft</title>
     <link rel="stylesheet" href="style.css">
-    <!-- Підключаємо шрифти -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Lato:wght@300;400&display=swap" rel="stylesheet">
+    <style>
+        /* Додайте мінімальні стилі для індикатора статусу, якщо вони не в style.css */
+        .status-message {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .status-message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .status-message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
 </head>
 <body>
     <header>
         <nav>
             <a href="index.html" class="logo-nav">SoulCraft</a>
             <div class="nav-links">
-                <!-- Кнопка "Вийти" з'явиться тут -->
                 <button id="logout-button" class="button">Вийти</button>
             </div>
         </nav>
@@ -24,13 +41,13 @@
     <main class="dashboard-container">
         <h1>Ваш профіль</h1>
         
+        <div id="general-status" class="status-message" style="display:none;"></div>
+
         <div class="profile-layout">
             
-            <!-- ЛІВА КОЛОНКА: ФОТО -->
             <div class="profile-pic-container">
                 <img src="" alt="Ваше фото профілю" id="profile-pic-display" class="profile-pic">
                 
-                <!-- Заглушка, якщо фото немає -->
                 <div id="profile-pic-placeholder" class="profile-pic-placeholder">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A1.5 1.5 0 0118 21.75H6.001c-.621 0-1.125-.504-1.125-1.125a1.5 1.5 0 01.624-1.507z" />
@@ -40,9 +57,10 @@
                 <input type="file" id="photo-upload-input" accept="image/*" style="display: none;">
                 <button id="upload-pic-button" class="button button-primary">Змінити фото</button>
                 <button id="save-pic-button" class="button" style="display:none;">Зберегти фото</button>
+                
+                <div id="photo-status" class="status-message" style="display:none;"></div>
             </div>
 
-            <!-- ПРАВА КОЛОНКА: ІНФОРМАЦІЯ -->
             <div class="profile-info-container">
                 <form id="profile-form">
                     <label for="email-display">Email (не можна змінити)</label>
@@ -64,9 +82,6 @@
         </div>
     </main>
 
-    <!-- ======== БЛОК FIREBASE (ВСЯ ЛОГІКА ТУТ) ======== -->
-    
-    <!-- Підключаємо всі 4 сервіси Firebase -->
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
@@ -103,12 +118,31 @@
         const uploadPicButton = document.getElementById('upload-pic-button');
         const photoUploadInput = document.getElementById('photo-upload-input');
         const savePicButton = document.getElementById('save-pic-button');
+        
+        // НОВІ ЕЛЕМЕНТИ ДЛЯ СТАТУСУ
+        const generalStatusDiv = document.getElementById('general-status');
+        const photoStatusDiv = document.getElementById('photo-status');
+        const profileSaveButton = profileForm.querySelector('button[type="submit"]');
 
         let currentUser = null; // Зберігаємо тут дані користувача
         let selectedFile = null; // Зберігаємо обраний файл
 
+        // ФУНКЦІЯ ДЛЯ ВІДОБРАЖЕННЯ ПОВІДОМЛЕНЬ
+        function showStatus(element, message, type) {
+            element.textContent = message;
+            element.className = 'status-message ' + type;
+            element.style.display = 'block';
+            
+            // Автоматично приховуємо повідомлення про успіх через 5 секунд
+            if (type === 'success') {
+                setTimeout(() => {
+                    element.style.display = 'none';
+                }, 5000);
+            }
+        }
+
         // 
-        // --- ГОЛОВНА ФУНКЦІЯ (ОНОВЛЕНО) ---
+        // --- ГОЛОВНА ФУНКЦІЯ ---
         // 
         auth.onAuthStateChanged((user) => {
             if (user && user.emailVerified) {
@@ -118,14 +152,17 @@
 
             } else if (user && !user.emailVerified) {
                 // ВАРІАНТ 2: Користувач увійшов, АЛЕ ПОШТА НЕ ПІДТВЕРДЖЕНА
-                alert("Ваш акаунт ще не активовано. Будь ласка, перевірте пошту (або папку 'Спам') та перейдіть за посиланням для підтвердження.");
-                // Виходимо з системи (щоб він не міг нічого робити) і відправляємо на вхід
+                showStatus(generalStatusDiv, "Ваш акаунт ще не активовано. Перевірте пошту (або папку 'Спам') та перейдіть за посиланням.", 'error');
+                
+                // Виходимо з системи і відправляємо на вхід
                 auth.signOut();
-                window.location.href = 'login.html';
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 3000); // Даємо час прочитати повідомлення
 
             } else {
                 // ВАРІАНТ 3: Користувач НЕ увійшов
-                alert("Будь ласка, увійдіть, щоб побачити ваш профіль.");
+                // alert("Будь ласка, увійдіть, щоб побачити ваш профіль."); // Замінюємо на showStatus при необхідності
                 window.location.href = 'login.html';
             }
         });
@@ -166,6 +203,11 @@
 
             const userDocRef = db.collection('users').doc(currentUser.uid);
             
+            // Вмикаємо індикатор завантаження
+            profileSaveButton.disabled = true;
+            const originalText = profileSaveButton.textContent;
+            profileSaveButton.textContent = "Збереження...";
+            
             try {
                 await userDocRef.set({
                     name: nameInput.value,
@@ -173,10 +215,14 @@
                     phone: phoneInput.value
                 }, { merge: true }); // { merge: true } щоб не перезаписати фото
                 
-                alert("Профіль успішно збережено!");
+                showStatus(generalStatusDiv, "Профіль успішно збережено!", 'success');
             } catch (error) {
                 console.error("Помилка збереження профілю: ", error);
-                alert("Помилка: " + error.message);
+                showStatus(generalStatusDiv, "Помилка збереження профілю: " + error.message, 'error');
+            } finally {
+                // Вимикаємо індикатор завантаження
+                profileSaveButton.disabled = false;
+                profileSaveButton.textContent = originalText;
             }
         });
 
@@ -202,6 +248,8 @@
                 
                 // Показуємо кнопку "Зберегти фото"
                 savePicButton.style.display = 'inline-block';
+                // Приховуємо попередні повідомлення
+                photoStatusDiv.style.display = 'none';
             }
         });
 
@@ -210,19 +258,22 @@
             if (!currentUser || !selectedFile) return;
 
             savePicButton.textContent = "Завантаження...";
+            savePicButton.disabled = true;
             
             // Створюємо посилання на Firebase Storage
             const storageRef = storage.ref(`profile_pics/${currentUser.uid}`);
             
+            // Додаємо метадані для коректної обробки файлу
+            const metadata = {
+                contentType: selectedFile.type
+            };
+            
             try {
                 // Завантажуємо файл
-                const task = await storageRef.put(selectedFile);
+                const task = await storageRef.put(selectedFile, metadata);
                 
                 // Отримуємо URL завантаженого файлу
                 const downloadURL = await task.ref.getDownloadURL();
-                
-                // Оновлюємо фото в UI (хоча воно вже є з прев'ю)
-                profilePicDisplay.src = downloadURL;
                 
                 // Зберігаємо URL у Firestore
                 const userDocRef = db.collection('users').doc(currentUser.uid);
@@ -230,14 +281,15 @@
                     photoURL: downloadURL
                 }, { merge: true });
 
-                alert("Фото профілю оновлено!");
+                showStatus(photoStatusDiv, "Фото профілю оновлено!", 'success');
                 savePicButton.style.display = 'none'; // Ховаємо кнопку
-                savePicButton.textContent = "Зберегти фото";
                 selectedFile = null; // Скидаємо вибір
 
             } catch (error) {
                 console.error("Помилка завантаження фото: ", error);
-                alert("Помилка: " + error.message);
+                showStatus(photoStatusDiv, "Помилка завантаження фото: " + error.message, 'error');
+            } finally {
+                savePicButton.disabled = false;
                 savePicButton.textContent = "Зберегти фото";
             }
         });
