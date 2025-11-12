@@ -84,7 +84,7 @@ nav {
     transition: all 0.3s ease;
     background-color: transparent;
     cursor: pointer;
-    font-family: var(--font-body); /* Додано для <button> */
+    font-family: var(--font-body);
 }
 
 .button:hover {
@@ -388,9 +388,8 @@ footer {
     align-items: center;
 }
 .profile-pic-placeholder svg {
-    /* --- ВИПРАВЛЕННЯ СТИЛЮ SVG --- */
-    width: 80px !important; 
-    height: 80px !important;
+    width: 80px; 
+    height: 80px;
     color: var(--color-secondary);
 }
 
@@ -405,7 +404,7 @@ footer {
     min-width: 300px;
 }
 
-/* Використовуємо ті ж стилі, що й для .form-container */
+/* Використовуємо ті ж стилі, що й для форм */
 .profile-info-container label {
     display: block;
     margin-bottom: 8px;
@@ -438,4 +437,49 @@ footer {
     width: 100%;
     padding: 12px;
     font-size: 16px;
+}
+
+/* СТАТУС-ПОВІДОМЛЕННЯ (НОВЕ) */
+.status-message {
+    margin: 10px 0 20px 0; /* Збільшуємо відступи */
+    padding: 10px;
+    border-radius: 5px;
+    text-align: center;
+    font-weight: 500;
+    border-width: 1px;
+    border-style: solid;
+}
+.status-message.success {
+    background-color: rgba(30, 150, 60, 0.2); /* Темно-зелений прозорий */
+    color: #4CAF50; /* Світло-зелений текст */
+    border-color: #4CAF50;
+}
+.status-message.error {
+    background-color: rgba(220, 50, 50, 0.2); /* Темно-червоний прозорий */
+    color: #F44336; /* Світло-червоний текст */
+    border-color: #F44336;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .profile-layout {
+        flex-direction: column;
+        gap: 20px;
+    }
+    .profile-pic-container {
+        order: 1; /* Фото зверху */
+    }
+    .profile-info-container {
+        order: 2; /* Інфо знизу */
+    }
+    .dashboard-container {
+        padding: 20px;
+        margin-top: 100px;
+    }
+    .hero-title {
+        font-size: 48px;
+    }
+    .hero-slogan {
+        font-size: 18px;
+    }
 }
