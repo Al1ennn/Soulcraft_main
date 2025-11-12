@@ -2,13 +2,20 @@
 <html lang="uk">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Soulcraft - Головна</title>
     <link rel="stylesheet" href="style.css">
+    <!-- Додаємо шрифти, схожі на ваш логотип -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@700&family=Noto+Sans:wght@300&display=swap" rel="stylesheet">
 </head>
 <body>
     <header>
         <nav>
-            <a href="index.html" class="logo">Soulcraft</a>
+            <!-- Нове текстове лого для навігації -->
+            <a href="index.html" class="logo-nav">SoulCraft</a> 
+            
             <div class="nav-links">
                 <a href="login.html" class="button">Вхід</a>
                 <a href="register.html" class="button button-primary">Реєстрація</a>
@@ -16,11 +23,18 @@
         </nav>
     </header>
 
-    <main>
-        <h1>Ласкаво просимо до Soulcraft!</h1>
-        <p>Це головна сторінка нашого MVP. Soulcraft - це [тут напишіть короткий опис вашого проєкту]. Ми пропонуємо [одна-дві ключові переваги].</p>
-        
-        <p>Пройдіть реєстрацію, щоб почати.</p>
+    <main class="hero-section">
+        <!-- Це буде наш центральний блок -->
+        <div class="hero-content">
+            <!-- 
+              ОСЬ ТУТ МИ ДОДАЛИ ВАШ ЛОГОТИП!
+              Браузер знайде 'logo.jpg', бо ви додали його у папку.
+            -->
+            <img src="logo.jpg" alt="Логотип SoulCraft" class="hero-logo">
+            
+            <h1 class="hero-title">SoulCraft</h1>
+            <p class="hero-slogan">Унікальні витвори, створені з душею</p>
+        </div>
     </main>
 
 </body>
