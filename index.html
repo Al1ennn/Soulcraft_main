@@ -3,19 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Soulcraft - Головна</title>
+    <title>SoulCraft - Головна</title>
     <link rel="stylesheet" href="style.css">
-    <!-- Додаємо шрифти, схожі на ваш логотип -->
+    
+    <!-- Підключаємо шрифти для магічної атмосфери -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@700&family=Noto+Sans:wght@300&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Lato:wght@300;400&display=swap" rel="stylesheet">
 </head>
 <body>
+
+    <!-- ======== HEADER (Навігація) ======== -->
     <header>
         <nav>
-            <!-- Нове текстове лого для навігації -->
-            <a href="index.html" class="logo-nav">SoulCraft</a> 
-            
+            <a href="index.html" class="logo-nav">SoulCraft</a>
             <div class="nav-links">
                 <a href="login.html" class="button">Вхід</a>
                 <a href="register.html" class="button button-primary">Реєстрація</a>
@@ -23,19 +24,74 @@
         </nav>
     </header>
 
+    <!-- ======== HERO SECTION (Головний екран) ======== -->
     <main class="hero-section">
-        <!-- Це буде наш центральний блок -->
         <div class="hero-content">
-            <!-- 
-              ОСЬ ТУТ МИ ДОДАЛИ ВАШ ЛОГОТИП!
-              Браузер знайде 'logo.jpg', бо ви додали його у папку.
-            -->
+            <!-- Використовуємо ваш логотип -->
             <img src="logo.jpg" alt="Логотип SoulCraft" class="hero-logo">
-            
             <h1 class="hero-title">SoulCraft</h1>
             <p class="hero-slogan">Унікальні витвори, створені з душею</p>
         </div>
+        <!-- Стрілка "гортати вниз" -->
+        <a href="#about" class="scroll-down">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="30">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 5.25l-7.5 7.5-7.5-7.5m15 6l-7.5 7.5-7.5-7.5" />
+            </svg>
+        </a>
     </main>
+
+    <!-- ======== ABOUT SECTION (Про нас) ======== -->
+    <section id="about" class="content-section">
+        <h2>Про Майстерню</h2>
+        <p>SoulCraft — це не просто предмети. Це втілення пристрасті, магії та годин кропіткої ручної роботи. Кожен витвір унікальний і несе в собі частинку душі майстра.</p>
+    </section>
+
+    <!-- ======== FEATURED SECTION (Круті фотки) ======== -->
+    <section id="featured" class="featured-section">
+        <h2>Обрані Витвори</h2>
+        <div class="gallery-grid">
+            
+            <!-- Картка 1 -->
+            <div class="gallery-card">
+                <img src="https://placehold.co/400x500/1a1a1a/e0ca9a?text=Витвір+1" alt="Фото витвору 1">
+                <div class="card-content">
+                    <h3>Магічний Амулет</h3>
+                    <p>Створений з місячного каменю та срібла.</p>
+                </div>
+            </div>
+            
+            <!-- Картка 2 -->
+            <div class="gallery-card">
+                <img src="https://placehold.co/400x500/1a1a1a/e0ca9a?text=Витвір+2" alt="Фото витвору 2">
+                <div class="card-content">
+                    <h3>Різьблена Скринька</h3>
+                    <p>Зі старовинного дуба з таємним замком.</p>
+                </div>
+            </div>
+            
+            <!-- Картка 3 -->
+            <div class="gallery-card">
+                <img src="https://placehold.co/400x500/1a1a1a/e0ca9a?text=Витвір+3" alt="Фото витвору 3">
+                <div class="card-content">
+                    <h3>Алхімічна Колба</h3>
+                    <p>Містить есенцію зоряного світла.</p>
+                </div>
+            </div>
+            
+        </div>
+    </section>
+
+    <!-- ======== CTA SECTION (Заклик до дії) ======== -->
+    <section class="cta-section">
+        <h2>Знайдіть Свій Артефакт</h2>
+        <p>Дослідіть повну колекцію або зареєструйтесь, щоб замовити унікальний витвір, створений саме для вас.</p>
+        <a href="register.html" class="button button-primary">Приєднатись до Гільдії</a>
+    </section>
+
+    <!-- ======== FOOTER (Підвал) ======== -->
+    <footer>
+        <p>&copy; 2025 SoulCraft. Усі права захищені.</p>
+    </footer>
 
 </body>
 </html>
