@@ -387,10 +387,14 @@ footer {
     justify-content: center;
     align-items: center;
 }
+
+/* ВИПРАВЛЕННЯ ЦЕНТРУВАННЯ SVG: */
 .profile-pic-placeholder svg {
     width: 80px; 
     height: 80px;
     color: var(--color-secondary);
+    /* Додаємо display: block, щоб забезпечити коректне центрування інлайн-елемента в Flexbox */
+    display: block; 
 }
 
 #upload-pic-button, #save-pic-button {
