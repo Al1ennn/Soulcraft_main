@@ -108,7 +108,7 @@
         let selectedFile = null; // Зберігаємо обраний файл
 
         // 
-        // --- ГОЛОВНА ФУНКЦІЯ (ОНОВЛЕНО) ---
+        // --- ГОЛОВНА ФУНКЦІЯ (ВИПРАВЛЕНО: НЕ ВИХОДИМО З СИСТЕМИ) ---
         // 
         auth.onAuthStateChanged((user) => {
             if (user && user.emailVerified) {
@@ -118,10 +118,13 @@
 
             } else if (user && !user.emailVerified) {
                 // ВАРІАНТ 2: Користувач увійшов, АЛЕ ПОШТА НЕ ПІДТВЕРДЖЕНА
-                alert("Ваш акаунт ще не активовано. Будь ласка, перевірте пошту (або папку 'Спам') та перейдіть за посиланням для підтвердження.");
-                // Виходимо з системи (щоб він не міг нічого робити) і відправляємо на вхід
-                auth.signOut();
-                window.location.href = 'login.html';
+                // ПОМИЛКА: Це місце, де ми робили auth.signOut(). Я його прибрав.
+                // Залишаємо користувача залогіненим, але попереджаємо його.
+                alert("Ваш акаунт ще не активовано. Будь ласка, перевірте пошту та перейдіть за посиланням для підтвердження. До цього часу ви можете лише переглядати профіль.");
+                currentUser = user; // все одно завантажуємо дані, але не дозволяємо змінювати
+                loadUserProfile(user.uid, user.email);
+                
+                // Можна також заблокувати кнопки редагування, але поки залишимо так.
 
             } else {
                 // ВАРІАНТ 3: Користувач НЕ увійшов
@@ -156,6 +159,9 @@
                 // Якщо документа ще немає, просто показуємо заглушку
                 profilePicDisplay.style.display = 'none';
                 profilePicPlaceholder.style.display = 'block';
+                
+                // --- ВИПРАВЛЕНО: Створюємо порожній документ користувача (для першого збереження)
+                userDocRef.set({ name: '', city: '', phone: '' }); 
             }
         }
 
@@ -163,6 +169,12 @@
         profileForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             if (!currentUser) return;
+
+            // Якщо пошта не підтверджена, не дозволяємо зберігати дані
+            if (!currentUser.emailVerified) {
+                alert("Для збереження даних профілю спочатку підтвердіть свою пошту.");
+                return;
+            }
 
             const userDocRef = db.collection('users').doc(currentUser.uid);
             
@@ -207,7 +219,14 @@
 
         // Крок В: Клік по кнопці "Зберегти фото"
         savePicButton.addEventListener('click', async () => {
-            if (!currentUser || !selectedFile) return;
+            if (!currentUser) return;
+             // Перевірка пошти перед завантаженням
+            if (!currentUser.emailVerified) {
+                alert("Для завантаження фото профілю спочатку підтвердіть свою пошту.");
+                return;
+            }
+            if (!selectedFile) return;
+
 
             savePicButton.textContent = "Завантаження...";
             
