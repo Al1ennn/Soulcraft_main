@@ -4,18 +4,23 @@
     <meta charset="UTF-8">
     <title>Вхід - Soulcraft</title>
     <link rel="stylesheet" href="style.css">
+    <!-- Додаємо шрифти -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Lato:wght@300;400&display=swap" rel="stylesheet">
 </head>
 <body>
     <header>
         <nav>
-            <a href="index.html" class="logo">Soulcraft</a>
+            <a href="index.html" class="logo-nav">SoulCraft</a>
+            <div class="nav-links">
+            </div>
         </nav>
     </header>
 
     <main class="form-container">
         <h1>Вхід в акаунт</h1>
         
-        <!-- Ми прибрали 'action' з форми -->
         <form id="login-form">
             <label for="email">Email</label>
             <input type="email" id="email" name="email" placeholder="example@gmail.com" required>
@@ -27,15 +32,23 @@
         </form>
         
         <p>Немає акаунту? <a href="register.html">Створити</a></p>
+        
+        <!-- 
+            --- НОВИЙ БЛОК ДЛЯ ПОВТОРНОЇ ВІДПРАВКИ ---
+        -->
+        <p style="margin-top: 20px; border-top: 1px solid #3a3a3a; padding-top: 20px; text-align: center;">
+            Не прийшов лист? 
+            <a href="#" id="resend-verification-link">Надіслати повторно</a>
+        </p>
+        
     </main>
 
-    <!-- ======== БЛОК FIREBASE ======== -->
-    
+    <!-- ======== ПОЧАТОК БЛОКУ FIREBASE ======== -->
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
 
     <script>
-        // 1. ВАШІ КЛЮЧІ FIREBASE (ті самі, що й на сторінці реєстрації)
+        // ВАШІ КЛЮЧІ
         const firebaseConfig = {
           apiKey: "AIzaSyDI1y9z3JqGwjOYacWsHZgPhU038YBz9pA",
           authDomain: "soulcraft-project.firebaseapp.com",
@@ -45,35 +58,72 @@
           appId: "1:442181022403:web:590c4523ebcc12213c2876"
         };
 
-        // 2. Ініціалізуємо Firebase
+        // Ініціалізуємо Firebase
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
 
-        // 3. Знаходимо форму входу
         const loginForm = document.getElementById('login-form');
+        const resendLink = document.getElementById('resend-verification-link');
 
+        // ЛОГІКА ВХОДУ
         loginForm.addEventListener('submit', (e) => {
             e.preventDefault();
-
             const email = loginForm.email.value;
             const password = loginForm.password.value;
 
-            // 4. Входимо в систему (магія!)
             auth.signInWithEmailAndPassword(email, password)
                 .then((userCredential) => {
-                    // Успіх! Користувач увійшов.
-                    alert("Успішний вхід! Вітаємо.");
-                    window.location.href = "dashboard.html";
+                    
+                    // --- ОНОВЛЕНА ПЕРЕВІРКА ---
+                    if (userCredential.user.emailVerified) {
+                        // Пошта підтверджена, пускаємо в кабінет
+                        alert("Успішний вхід! Вітаємо.");
+                        window.location.href = "dashboard.html";
+                    } else {
+                        // Пошта НЕ підтверджена
+                        alert("Ваша пошта ще не підтверджена. Будь ласка, перевірте лист у вашій поштовій скринці.");
+                        // Виходимо з системи, щоб не тримати його залогіненим
+                        auth.signOut();
+                    }
+
                 })
                 .catch((error) => {
-                    // Помилка!
-                    console.error("Помилка входу:", error);
-                    // Показуємо користувачу помилку (наприклад, "Wrong password" or "User not found")
                     alert("Помилка: " + error.message);
                 });
         });
+
+        // 
+        // --- НОВА ФУНКЦІЯ: ПОВТОРНА ВІДПРАВКА ЛИСТА ---
+        // 
+        resendLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            
+            // Беремо пошту, яку користувач вже ввів у поле "Email"
+            const email = loginForm.email.value;
+            
+            if (!email) {
+                alert("Будь ласка, спочатку введіть вашу пошту у поле 'Email' вище.");
+                return;
+            }
+
+            // Намагаємось відправити лист (це спрацює, тільки якщо користувач
+            // вже залогінений, тому ми просимо його спочатку увійти)
+            const user = auth.currentUser;
+            
+            if (user) {
+                 // Якщо він вже залогінений (але не верифікований), відправляємо
+                 user.sendEmailVerification()
+                    .then(() => {
+                        alert("Новий лист з підтвердженням відправлено на вашу пошту! Будь ласка, перевірте її.");
+                    })
+                    .catch((error) => {
+                        alert("Помилка: " + error.message);
+                    });
+            } else {
+                alert("Помилка: Щоб відправити лист повторно, Firebase вимагає, щоб ви спочатку спробували увійти в систему. Будь ласка, введіть логін/пароль та натисніть 'Увійти'.");
+            }
+        });
     </script>
     <!-- ======== КІНЕЦЬ БЛОКУ FIREBASE ======== -->
-
 </body>
 </html>
