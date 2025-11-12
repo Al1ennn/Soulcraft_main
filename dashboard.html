@@ -15,7 +15,7 @@
         <nav>
             <a href="index.html" class="logo-nav">SoulCraft</a>
             <div class="nav-links">
-                <!-- Кнопка "Вийти" з'явиться тут -->
+                <!-- Кнопка "Вийти" -->
                 <button id="logout-button" class="button">Вийти</button>
             </div>
         </nav>
@@ -30,7 +30,7 @@
             <div class="profile-pic-container">
                 <img src="" alt="Ваше фото профілю" id="profile-pic-display" class="profile-pic">
                 
-                <!-- Заглушка, якщо фото немає -->
+                <!-- Заглушка, якщо фото немає (Виправлення стилю SVG) -->
                 <div id="profile-pic-placeholder" class="profile-pic-placeholder">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A1.5 1.5 0 0118 21.75H6.001c-.621 0-1.125-.504-1.125-1.125a1.5 1.5 0 01.624-1.507z" />
@@ -104,30 +104,24 @@
         const photoUploadInput = document.getElementById('photo-upload-input');
         const savePicButton = document.getElementById('save-pic-button');
 
-        let currentUser = null; // Зберігаємо тут дані користувача
-        let selectedFile = null; // Зберігаємо обраний файл
+        let currentUser = null; 
+        let selectedFile = null; 
 
         // 
-        // --- ГОЛОВНА ФУНКЦІЯ (ВИПРАВЛЕНО: НЕ ВИХОДИМО З СИСТЕМИ) ---
+        // --- ГОЛОВНА ФУНКЦІЯ (ВИПРАВЛЕНО: БЕЗ ВИХОДУ З СИСТЕМИ) ---
         // 
         auth.onAuthStateChanged((user) => {
-            if (user && user.emailVerified) {
-                // ВАРІАНТ 1: Користувач увійшов І ЙОГО ПОШТА ПІДТВЕРДЖЕНА
+            if (user) {
                 currentUser = user;
                 loadUserProfile(user.uid, user.email);
 
-            } else if (user && !user.emailVerified) {
-                // ВАРІАНТ 2: Користувач увійшов, АЛЕ ПОШТА НЕ ПІДТВЕРДЖЕНА
-                // ПОМИЛКА: Це місце, де ми робили auth.signOut(). Я його прибрав.
-                // Залишаємо користувача залогіненим, але попереджаємо його.
-                alert("Ваш акаунт ще не активовано. Будь ласка, перевірте пошту та перейдіть за посиланням для підтвердження. До цього часу ви можете лише переглядати профіль.");
-                currentUser = user; // все одно завантажуємо дані, але не дозволяємо змінювати
-                loadUserProfile(user.uid, user.email);
+                if (!user.emailVerified) {
+                     // Якщо пошта не підтверджена, просто попереджаємо і не блокуємо
+                    alert("Ваш акаунт ще не активовано. До цього часу ви можете лише переглядати профіль. Будь ласка, підтвердіть пошту.");
+                }
                 
-                // Можна також заблокувати кнопки редагування, але поки залишимо так.
-
             } else {
-                // ВАРІАНТ 3: Користувач НЕ увійшов
+                // Користувач НЕ увійшов
                 alert("Будь ласка, увійдіть, щоб побачити ваш профіль.");
                 window.location.href = 'login.html';
             }
@@ -156,12 +150,11 @@
                     profilePicPlaceholder.style.display = 'block';
                 }
             } else {
-                // Якщо документа ще немає, просто показуємо заглушку
+                // --- ВИПРАВЛЕНО: Створюємо порожній документ для чистого старту ---
+                // Це має вирішити проблему, коли неможливо зберегти профіль вперше.
+                userDocRef.set({ name: '', city: '', phone: '' }); 
                 profilePicDisplay.style.display = 'none';
                 profilePicPlaceholder.style.display = 'block';
-                
-                // --- ВИПРАВЛЕНО: Створюємо порожній документ користувача (для першого збереження)
-                userDocRef.set({ name: '', city: '', phone: '' }); 
             }
         }
 
@@ -170,7 +163,7 @@
             e.preventDefault();
             if (!currentUser) return;
 
-            // Якщо пошта не підтверджена, не дозволяємо зберігати дані
+            // Перевірка пошти перед збереженням
             if (!currentUser.emailVerified) {
                 alert("Для збереження даних профілю спочатку підтвердіть свою пошту.");
                 return;
@@ -183,7 +176,7 @@
                     name: nameInput.value,
                     city: cityInput.value,
                     phone: phoneInput.value
-                }, { merge: true }); // { merge: true } щоб не перезаписати фото
+                }, { merge: true }); 
                 
                 alert("Профіль успішно збережено!");
             } catch (error) {
@@ -193,17 +186,13 @@
         });
 
         // 3. ЛОГІКА ЗАВАНТАЖЕННЯ ФОТО
-        
-        // Крок А: Клік по кнопці "Змінити фото" відкриває прихований input
         uploadPicButton.addEventListener('click', () => {
             photoUploadInput.click();
         });
 
-        // Крок Б: Коли користувач обрав файл
         photoUploadInput.addEventListener('change', (e) => {
             selectedFile = e.target.files[0];
             if (selectedFile) {
-                // Показуємо прев'ю
                 const reader = new FileReader();
                 reader.onload = (event) => {
                     profilePicDisplay.src = event.target.result;
@@ -211,37 +200,25 @@
                     profilePicPlaceholder.style.display = 'none';
                 }
                 reader.readAsDataURL(selectedFile);
-                
-                // Показуємо кнопку "Зберегти фото"
                 savePicButton.style.display = 'inline-block';
             }
         });
 
-        // Крок В: Клік по кнопці "Зберегти фото"
         savePicButton.addEventListener('click', async () => {
-            if (!currentUser) return;
-             // Перевірка пошти перед завантаженням
+            if (!currentUser || !selectedFile) return;
+            
+            // Перевірка пошти перед завантаженням
             if (!currentUser.emailVerified) {
                 alert("Для завантаження фото профілю спочатку підтвердіть свою пошту.");
                 return;
             }
-            if (!selectedFile) return;
-
 
             savePicButton.textContent = "Завантаження...";
-            
-            // Створюємо посилання на Firebase Storage
             const storageRef = storage.ref(`profile_pics/${currentUser.uid}`);
             
             try {
-                // Завантажуємо файл
                 const task = await storageRef.put(selectedFile);
-                
-                // Отримуємо URL завантаженого файлу
                 const downloadURL = await task.ref.getDownloadURL();
-                
-                // Оновлюємо фото в UI (хоча воно вже є з прев'ю)
-                profilePicDisplay.src = downloadURL;
                 
                 // Зберігаємо URL у Firestore
                 const userDocRef = db.collection('users').doc(currentUser.uid);
@@ -249,10 +226,8 @@
                     photoURL: downloadURL
                 }, { merge: true });
 
-                alert("Фото профілю оновлено!");
-                savePicButton.style.display = 'none'; // Ховаємо кнопку
-                savePicButton.textContent = "Зберегти фото";
-                selectedFile = null; // Скидаємо вибір
+                // Після успішного збереження оновлюємо сторінку, щоб дані завантажились чисто
+                window.location.reload(); 
 
             } catch (error) {
                 console.error("Помилка завантаження фото: ", error);
