@@ -4,18 +4,22 @@
     <meta charset="UTF-8">
     <title>Реєстрація - Soulcraft</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Lato:wght@300;400&display=swap" rel="stylesheet">
 </head>
 <body>
     <header>
         <nav>
-            <a href="index.html" class="logo">Soulcraft</a>
+            <a href="index.html" class="logo-nav">SoulCraft</a>
+            <div class="nav-links">
+            </div>
         </nav>
     </header>
 
     <main class="form-container">
         <h1>Створити акаунт</h1>
         
-        <!-- Ми прибрали 'action' з форми -->
         <form id="register-form">
             <label for="email">Ваш Email</label>
             <input type="email" id="email" name="email" placeholder="example@gmail.com" required>
@@ -29,15 +33,11 @@
         <p>Вже маєте акаунт? <a href="login.html">Увійти</a></p>
     </main>
 
-    <!-- ======== БЛОК FIREBASE ======== -->
-    
-    <!-- 1. Підключаємо бібліотеки Firebase -->
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
 
     <script>
-        // 2. ВАШІ КЛЮЧІ FIREBASE
-        // (Використовуємо їх для ініціалізації)
+        // ВАШІ КЛЮЧІ
         const firebaseConfig = {
           apiKey: "AIzaSyDI1y9z3JqGwjOYacWsHZgPhU038YBz9pA",
           authDomain: "soulcraft-project.firebaseapp.com",
@@ -47,37 +47,35 @@
           appId: "1:442181022403:web:590c4523ebcc12213c2876"
         };
 
-        // 3. Ініціалізуємо Firebase (старий, але простий v8-сумісний спосіб)
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
-
-        // 4. Знаходимо нашу форму
         const registerForm = document.getElementById('register-form');
 
         registerForm.addEventListener('submit', (e) => {
-            e.preventDefault(); // Зупиняємо форму
-
-            // 5. Отримуємо дані
+            e.preventDefault();
             const email = registerForm.email.value;
             const password = registerForm.password.value;
 
-            // 6. Створюємо користувача в Firebase
             auth.createUserWithEmailAndPassword(email, password)
                 .then((userCredential) => {
-                    // Успіх!
-                    alert("Реєстрація успішна! Ласкаво просимо!");
-                    // Перенаправляємо на сторінку кабінету
-                    window.location.href = "dashboard.html";
+                    // Успіх! Користувач створений.
+                    
+                    // --- НОВИЙ КРОК: ВІДПРАВЛЯЄМО ЛИСТ ---
+                    userCredential.user.sendEmailVerification()
+                        .then(() => {
+                            // Лист відправлено.
+                            alert("Реєстрація успішна! Ми відправили вам на пошту лист для підтвердження акаунту. Будь ласка, перейдіть за посиланням у ньому.");
+                            // Відправляємо на сторінку входу
+                            window.location.href = "login.html";
+                        });
+                    
                 })
                 .catch((error) => {
-                    // Помилка!
+                    // Помилка! (наприклад, "email-already-in-use")
                     console.error("Помилка реєстрації:", error);
-                    // Показуємо користувачу помилку (наприклад, "Password should be at least 6 characters")
                     alert("Помилка: " + error.message);
                 });
         });
     </script>
-    <!-- ======== КІНЕЦЬ БЛОКУ FIREBASE ======== -->
-
-</body>
+    </body>
 </html>
