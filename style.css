@@ -388,8 +388,9 @@ footer {
     align-items: center;
 }
 .profile-pic-placeholder svg {
-    width: 80px;
-    height: 80px;
+    /* --- ВИПРАВЛЕННЯ СТИЛЮ SVG --- */
+    width: 80px !important; 
+    height: 80px !important;
     color: var(--color-secondary);
 }
 
