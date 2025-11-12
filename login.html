@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <title>Вхід - Soulcraft</title>
     <link rel="stylesheet" href="style.css">
-    <!-- Додаємо шрифти -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Lato:wght@300;400&display=swap" rel="stylesheet">
@@ -33,9 +32,6 @@
         
         <p>Немає акаунту? <a href="register.html">Створити</a></p>
         
-        <!-- 
-            --- НОВИЙ БЛОК ДЛЯ ПОВТОРНОЇ ВІДПРАВКИ ---
-        -->
         <p style="margin-top: 20px; border-top: 1px solid #3a3a3a; padding-top: 20px; text-align: center;">
             Не прийшов лист? 
             <a href="#" id="resend-verification-link">Надіслати повторно</a>
@@ -43,7 +39,6 @@
         
     </main>
 
-    <!-- ======== ПОЧАТОК БЛОКУ FIREBASE ======== -->
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
 
@@ -65,7 +60,9 @@
         const loginForm = document.getElementById('login-form');
         const resendLink = document.getElementById('resend-verification-link');
 
-        // ЛОГІКА ВХОДУ
+        // 
+        // --- ОНОВЛЕНА ЛОГІКА ВХОДУ ---
+        // 
         loginForm.addEventListener('submit', (e) => {
             e.preventDefault();
             const email = loginForm.email.value;
@@ -74,16 +71,15 @@
             auth.signInWithEmailAndPassword(email, password)
                 .then((userCredential) => {
                     
-                    // --- ОНОВЛЕНА ПЕРЕВІРКА ---
                     if (userCredential.user.emailVerified) {
-                        // Пошта підтверджена, пускаємо в кабінет
+                        // 1. Пошта підтверджена, пускаємо в кабінет
                         alert("Успішний вхід! Вітаємо.");
                         window.location.href = "dashboard.html";
                     } else {
-                        // Пошта НЕ підтверджена
-                        alert("Ваша пошта ще не підтверджена. Будь ласка, перевірте лист у вашій поштовій скринці.");
-                        // Виходимо з системи, щоб не тримати його залогіненим
-                        auth.signOut();
+                        // 2. Пошта НЕ підтверджена
+                        alert("Ваша пошта ще не підтверджена. Будь ласка, перевірте лист у скринці або натисніть 'Надіслати повторно' нижче.");
+                        // МИ БІЛЬШЕ НЕ РОБИМО auth.signOut()!
+                        // Користувач залишається "залогіненим", щоб отримати новий лист.
                     }
 
                 })
@@ -93,37 +89,28 @@
         });
 
         // 
-        // --- НОВА ФУНКЦІЯ: ПОВТОРНА ВІДПРАВКА ЛИСТА ---
+        // --- ОНОВЛЕНА ЛОГІКА ПОВТОРНОЇ ВІДПРАВКИ ---
         // 
         resendLink.addEventListener('click', (e) => {
             e.preventDefault();
             
-            // Беремо пошту, яку користувач вже ввів у поле "Email"
-            const email = loginForm.email.value;
-            
-            if (!email) {
-                alert("Будь ласка, спочатку введіть вашу пошту у поле 'Email' вище.");
-                return;
-            }
-
-            // Намагаємось відправити лист (це спрацює, тільки якщо користувач
-            // вже залогінений, тому ми просимо його спочатку увійти)
+            // Беремо поточного користувача (який щойно спробував увійти)
             const user = auth.currentUser;
             
             if (user) {
-                 // Якщо він вже залогінений (але не верифікований), відправляємо
+                 // Користувач залогінений (але не верифікований), ми можемо надіслати лист
                  user.sendEmailVerification()
                     .then(() => {
-                        alert("Новий лист з підтвердженням відправлено на вашу пошту! Будь ласка, перевірте її.");
+                        alert("Новий лист з підтвердженням відправлено на вашу пошту! Будь ласка, перевірте її (та папку Спам).");
                     })
                     .catch((error) => {
                         alert("Помилка: " + error.message);
                     });
             } else {
-                alert("Помилка: Щоб відправити лист повторно, Firebase вимагає, щоб ви спочатку спробували увійти в систему. Будь ласка, введіть логін/пароль та натисніть 'Увійти'.");
+                // Користувач ще не увійшов
+                alert("Будь ласка, спочатку спробуйте увійти (введіть пошту/пароль та натисніть 'Увійти'), а потім натисніть це посилання ще раз.");
             }
         });
     </script>
-    <!-- ======== КІНЕЦЬ БЛОКУ FIREBASE ======== -->
-</body>
+    </body>
 </html>
