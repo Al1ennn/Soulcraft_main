@@ -13,13 +13,10 @@
     <header>
         <nav>
             <a href="index.html" class="logo-nav">SoulCraft</a>
-            
             <div class="nav-links">
                 <a href="shop.html" class="button">Магазин</a>
-                
                 <a href="login.html" class="button" id="login-link">Вхід</a>
                 <a href="register.html" class="button button-primary" id="register-link">Реєстрація</a>
-                
                 <a href="dashboard.html" class="button button-primary" id="dashboard-link" style="display: none;">Мій Кабінет</a>
                 <button id="logout-link" class="button" style="display: none;">Вийти</button>
             </div>
@@ -60,7 +57,7 @@
         const db = firebase.firestore();
 
         // 
-        // --- ЛОГІКА ДЛЯ КНОПОК НАВІГАЦІЇ (НОВЕ) ---
+        // --- ЛОГІКА ДЛЯ КНОПОК НАВІГАЦІЇ ---
         // 
         const loginLink = document.getElementById('login-link');
         const registerLink = document.getElementById('register-link');
@@ -92,17 +89,22 @@
         }
 
         // 
-        // --- СТАРА ЛОГІКА ДЛЯ ЗАВАНТАЖЕННЯ ТОВАРІВ ---
+        // --- ОНОВЛЕНО: ЛОГІКА ЗАВАНТАЖЕННЯ ТОВАРІВ ---
         //
         async function loadProducts() {
             const grid = document.getElementById('product-grid');
             const indicator = document.getElementById('loading-indicator');
             
             try {
-                const snapshot = await db.collection('products').get();
+                // 
+                // --- ОНОВЛЕНО: Ми завантажуємо ТІЛЬКИ схвалені товари ---
+                // 
+                const snapshot = await db.collection('products')
+                                          .where("status", "==", "approved")
+                                          .get();
                 
                 if (snapshot.empty) {
-                    indicator.textContent = 'Наразі немає товарів у магазині.';
+                    indicator.textContent = 'Наразі немає схвалених товарів у магазині.';
                     return;
                 }
 
@@ -113,6 +115,7 @@
                     
                     const card = document.createElement('div');
                     card.className = 'gallery-card';
+                    // --- ОНОВЛЕНО: Тепер imageUrl - це повний URL зі Storage ---
                     card.innerHTML = `
                         <img src="${product.imageUrl}" alt="${product.name}">
                         <div class="card-content">
