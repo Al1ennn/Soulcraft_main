@@ -288,10 +288,9 @@ footer {
 }
 
 .buy-button {
-    /* Спеціальні стилі для кнопки "Купити" в картці */
     padding: 8px 15px;
     font-size: 14px;
-    margin-left: 0; /* Скидаємо відступ */
+    margin-left: 0; 
 }
 
 
@@ -300,7 +299,7 @@ footer {
 /* ---------------------------------- */
 .form-container {
     max-width: 400px;
-    margin: 150px auto 50px auto; /* Збільшили відступ зверху */
+    margin: 150px auto 50px auto; 
     padding: 40px;
     background-color: var(--color-surface);
     border-radius: 10px;
@@ -380,7 +379,7 @@ footer {
 /* ---------------------------------- */
 .dashboard-container {
     max-width: 900px;
-    margin: 120px auto 50px auto; /* 120px зверху через фіксований header */
+    margin: 120px auto 50px auto; 
     padding: 40px;
     background-color: var(--color-surface);
     border-radius: 10px;
@@ -402,7 +401,7 @@ footer {
 
 /* --- Ліва колонка - фото --- */
 .profile-pic-container {
-    flex: 1; /* Займає 1 частину */
+    flex: 1; 
     min-width: 250px;
     display: flex;
     flex-direction: column;
@@ -412,11 +411,11 @@ footer {
 .profile-pic {
     width: 200px;
     height: 200px;
-    border-radius: 50%; /* Кругле фото */
+    border-radius: 50%; 
     object-fit: cover;
     border: 4px solid var(--color-primary);
     background-color: #101010;
-    display: none; /* Ховаємо, поки не завантажиться */
+    display: none; 
 }
 
 .profile-pic-placeholder {
@@ -430,7 +429,6 @@ footer {
     align-items: center;
 }
 .profile-pic-placeholder svg {
-    /* --- ВИПРАВЛЕННЯ СТИЛЮ SVG --- */
     width: 80px !important; 
     height: 80px !important;
     color: var(--color-secondary);
@@ -443,11 +441,10 @@ footer {
 
 /* --- Права колонка - інфо --- */
 .profile-info-container {
-    flex: 2; /* Займає 2 частини, ширша */
+    flex: 2; 
     min-width: 300px;
 }
 
-/* (Використовуємо ті ж стилі, що й для форм) */
 .profile-info-container label {
     display: block;
     margin-bottom: 8px;
@@ -513,7 +510,7 @@ footer {
     margin-bottom: 20px;
 }
 .role-selector input[type="radio"] {
-    display: none; /* Ховаємо стандартну радіо-кнопку */
+    display: none; 
 }
 .role-selector label {
     display: block;
@@ -523,7 +520,6 @@ footer {
     cursor: pointer;
     transition: all 0.3s ease;
 }
-/* Стиль для обраної ролі */
 .role-selector input[type="radio"]:checked + label {
     border-color: var(--color-primary);
     background-color: rgba(224, 202, 154, 0.1);
@@ -535,9 +531,8 @@ footer {
 /* 7. СТИЛІ ДЛЯ ПАНЕЛІ ПРОДАВЦЯ (dashboard.html) */
 /* ---------------------------------- */
 .seller-panel {
-    background-color: #101010; /* Трохи світліший фон */
+    background-color: #101010; 
     padding: 30px;
-    margin-bottom: 40px;
     border-radius: 10px;
     border: 1px solid #2a2a2a;
 }
@@ -551,7 +546,6 @@ footer {
     text-align: center;
     font-size: 24px;
 }
-/* Використовуємо стилі, схожі на .profile-info-container */
 .seller-panel label {
     display: block;
     margin-bottom: 8px;
@@ -582,6 +576,46 @@ footer {
     font-size: 16px;
 }
 
+/* ---------------------------------- */
+/* 8. СТИЛІ ДЛЯ ВКЛАДОК (dashboard.html) */
+/* (НОВІ СТИЛІ) */
+/* ---------------------------------- */
+.tab-nav {
+    display: flex;
+    border-bottom: 2px solid #2a2a2a;
+    margin-bottom: 30px;
+}
+.tab-button {
+    /* Використовуємо стилі звичайних кнопок, але прибираємо деякі */
+    font-family: var(--font-body);
+    font-size: 18px;
+    font-weight: bold;
+    color: var(--color-secondary);
+    background-color: transparent;
+    border: none;
+    padding: 15px 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px; /* Накладаємо на нижню рамку */
+}
+.tab-button:hover {
+    background-color: #101010;
+    color: var(--color-text);
+}
+.tab-button.active {
+    /* Активна вкладка */
+    color: var(--color-primary);
+    border-bottom-color: var(--color-primary);
+}
+
+/* Логіка показу/приховування контенту вкладок */
+.tab-content {
+    display: none;
+}
+.tab-content.active {
+    display: block;
+}
 
 /* ---------------------------------- */
 /* 9. АДАПТИВНІСТЬ (Media Queries) */
@@ -606,5 +640,12 @@ footer {
     }
     .hero-slogan {
         font-size: 18px;
+    }
+    .tab-nav {
+        flex-wrap: wrap;
+    }
+    .tab-button {
+        flex-basis: 50%;
+        text-align: center;
     }
 }
