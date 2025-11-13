@@ -14,6 +14,7 @@
         <nav>
             <a href="index.html" class="logo-nav">SoulCraft</a>
             <div class="nav-links">
+                <a href="shop.html" class="button">Магазин</a>
             </div>
         </nav>
     </header>
@@ -28,6 +29,19 @@
             <label for="password">Пароль</label>
             <input type="password" id="password" name="password" placeholder="Ваш пароль" required>
             
+            <!-- 
+              --- НОВИЙ БЛОК: ВИБІР РОЛІ ---
+            -->
+            <label>Я реєструюсь як:</label>
+            <div class="role-selector">
+                <input type="radio" id="role-buyer" name="role" value="buyer" checked required>
+                <label for="role-buyer">Покупець</label>
+                
+                <input type="radio" id="role-seller" name="role" value="seller">
+                <label for="role-seller">Продавець</label>
+            </div>
+            <!-- --- КІНЕЦЬ НОВОГО БЛОКУ --- -->
+            
             <button type="submit" class="button button-primary">Зареєструватись</button>
         </form>
         
@@ -37,6 +51,8 @@
     <!-- ======== БЛОК FIREBASE ======== -->
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+    <!-- Додаємо Firestore, він потрібен для збереження ролі -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
 
     <script>
         // ВАШІ КЛЮЧІ
@@ -51,34 +67,55 @@
 
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
+        const db = firebase.firestore(); // Ініціалізуємо Firestore
         const registerForm = document.getElementById('register-form');
 
         registerForm.addEventListener('submit', (e) => {
             e.preventDefault();
             const email = registerForm.email.value;
             const password = registerForm.password.value;
+            
+            // --- НОВЕ: Отримуємо обрану роль ---
+            const role = registerForm.role.value; 
 
             auth.createUserWithEmailAndPassword(email, password)
                 .then((userCredential) => {
-                    console.log("Користувач створений, відправляю лист...");
-                    
-                    // --- ВИПРАВЛЕНО: actionCodeSettings для правильного повернення ---
-                    const actionCodeSettings = {
-                        // Це каже Firebase, куди повернути користувача після підтвердження
-                        url: 'https://al1ennn.github.io/Soulcraft_main/login.html'
-                    };
+                    const user = userCredential.user;
+                    console.log("Користувач створений, ID:", user.uid);
 
-                    userCredential.user.sendEmailVerification(actionCodeSettings)
-                        .then(() => {
-                            alert("Реєстрація успішна! Ми відправили вам на пошту лист для підтвердження акаунту. Будь ласка, перейдіть за посиланням у ньому.");
-                            window.location.href = "login.html";
-                        })
-                        .catch((emailError) => {
-                            console.error("Помилка відправки листа:", emailError);
-                            alert("Помилка відправки листа: " + emailError.message + ". Будь ласка, спробуйте увійти.");
-                            userCredential.user.delete();
-                        });
+                    // --- ОНОВЛЕНО: Створюємо документ у Firestore ОДРАЗУ ---
+                    // Ми зберігаємо роль та створюємо порожній профіль
+                    const userDocRef = db.collection('users').doc(user.uid);
                     
+                    userDocRef.set({
+                        role: role, // Зберігаємо роль!
+                        name: "",   // Порожні поля, які користувач заповнить пізніше
+                        city: "",
+                        phone: "",
+                        photoURL: ""
+                    })
+                    .then(() => {
+                        console.log("Документ користувача створено з роллю:", role);
+                        
+                        // Тепер відправляємо лист (з правильним URL)
+                        const actionCodeSettings = {
+                            url: 'https://al1ennn.github.io/Soulcraft_main/login.html'
+                        };
+                        
+                        user.sendEmailVerification(actionCodeSettings)
+                            .then(() => {
+                                alert("Реєстрація успішна! Ми відправили вам на пошту лист для підтвердження акаунту.");
+                                window.location.href = "login.html";
+                            })
+                            .catch((emailError) => {
+                                console.error("Помилка відправки листа:", emailError);
+                                alert("Помилка відправки листа: " + emailError.message);
+                            });
+                    })
+                    .catch((dbError) => {
+                         console.error("Помилка створення документа в Firestore:", dbError);
+                         alert("Помилка створення профілю: " + dbError.message);
+                    });
                 })
                 .catch((error) => {
                     console.error("Помилка реєстрації:", error);
@@ -86,6 +123,5 @@
                 });
         });
     </script>
-    <!-- ======== КІНЕЦЬ БЛОКУ FIREBASE ======== -->
 </body>
 </html>
