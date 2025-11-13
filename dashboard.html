@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Особистий кабінет - SoulCraft</title>
     <link rel="stylesheet" href="style.css">
-    <!-- Підключаємо шрифти -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Lato:wght@300;400&display=swap" rel="stylesheet">
@@ -16,6 +15,12 @@
             <a href="index.html" class="logo-nav">SoulCraft</a>
             <div class="nav-links">
                 <a href="shop.html" class="button">Магазин</a>
+                
+                <a href="cart.html" class="button" id="cart-link" style="display: none;">
+                    Корзина
+                    <span id="cart-count" class="cart-count-badge" style="display: none;">0</span>
+                </a>
+
                 <button id="logout-button" class="button">Вийти</button>
             </div>
         </nav>
@@ -23,20 +28,16 @@
 
     <main class="dashboard-container">
         
-        <!-- Навігація по вкладках -->
         <div class="tab-nav">
             <button class="tab-button active" data-tab="profile-tab">Ваш профіль</button>
             <button class="tab-button" data-tab="seller-tab" id="seller-tab-button" style="display: none;">Панель Продавця</button>
         </div>
 
-        <!-- Повідомлення про статус -->
         <div id="general-status" class="status-message" style="display:none;"></div>
 
-        <!-- ВКЛАДКА 1: ПРОФІЛЬ -->
         <div id="profile-tab" class="tab-content active">
             <h1>Ваш профіль</h1>
             <div class="profile-layout">
-                <!-- ... (Код профілю не змінився) ... -->
                 <div class="profile-pic-container">
                     <img src="" alt="Ваше фото профілю" id="profile-pic-display" class="profile-pic">
                     <div id="profile-pic-placeholder" class="profile-pic-placeholder">
@@ -64,9 +65,6 @@
             </div>
         </div>
 
-        <!-- 
-          --- ВКЛАДКА 2: ПАНЕЛЬ ПРОДАВЦЯ (ОНОВЛЕНО) ---
-        -->
         <div id="seller-tab" class="tab-content">
             <section id="seller-panel" class="seller-panel">
                 <h2>Панель Продавця</h2>
@@ -74,16 +72,10 @@
                     <h3>Додати новий товар</h3>
                     <label for="product-name">Назва товару</label>
                     <input type="text" id="product-name" required>
-                    
                     <label for="product-desc">Короткий опис товару</label>
                     <textarea id="product-desc" rows="3" required></textarea>
-
-                    <!-- 
-                      --- НОВИЙ БЛОК: ІСТОРІЯ ПРЕДМЕТУ ---
-                    -->
                     <label for="product-story">Історія предмету (необов'язково)</label>
                     <textarea id="product-story" rows="5" placeholder="Розкажіть, що робить цей предмет особливим..."></textarea>
-                    
                     <label for="product-category">Категорія</label>
                     <select id="product-category" required>
                         <option value="" disabled selected>Оберіть категорію</option>
@@ -94,13 +86,10 @@
                         <option value="paintings">Картини</option>
                         <option value="other">Інше</option>
                     </select>
-                    
                     <label for="product-price">Ціна (у грн)</label>
                     <input type="number" id="product-price" required>
-                    
                     <label for="product-image-file">Фото товару</label>
                     <input type="file" id="product-image-file" class="file-input" accept="image/png, image/jpeg" required>
-                    
                     <button type="submit" class="button button-primary" id="add-product-button">Додати товар</button>
                 </form>
             </section>
@@ -108,8 +97,6 @@
 
     </main>
 
-    <!-- ======== БЛОК FIREBASE ======== -->
-    
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
@@ -126,7 +113,6 @@
           appId: "1:442181022403:web:590c4523ebcc12213c2876"
         };
 
-        // Ініціалізуємо Firebase
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
@@ -151,12 +137,28 @@
         const tabButtons = document.querySelectorAll('.tab-button');
         const tabContents = document.querySelectorAll('.tab-content');
         const sellerTabButton = document.getElementById('seller-tab-button');
+        
+        // --- ОНОВЛЕНО: Елементи навігації ---
+        const cartLink = document.getElementById('cart-link');
+        const cartCountBadge = document.getElementById('cart-count');
 
         let currentUser = null; 
         let selectedFile = null; 
 
+        // --- НОВА ФУНКЦІЯ: ОНОВЛЕННЯ ЛІЧИЛЬНИКА КОРЗИНИ ---
+        function updateCartCount() {
+            const cart = JSON.parse(localStorage.getItem('soulcraftCart')) || [];
+            if (cart.length > 0) {
+                cartCountBadge.textContent = cart.length;
+                cartCountBadge.style.display = 'flex';
+            } else {
+                cartCountBadge.style.display = 'none';
+            }
+        }
+
         // Функція для показу повідомлень
         function showStatus(element, message, type) {
+            // ... (Код не змінився)
             element.textContent = message;
             element.className = 'status-message ' + type;
             element.style.display = 'block';
@@ -167,13 +169,19 @@
 
         // ГОЛОВНА ФУНКЦІЯ (АВТЕНТИФІКАЦІЯ)
         auth.onAuthStateChanged((user) => {
-            // ... (Код не змінився)
             if (user) {
                 currentUser = user;
                 loadUserProfile(user.uid, user.email);
-                if (!user.emailVerified) {
+                
+                // --- ОНОВЛЕНО: Перевірка верифікації ---
+                if (user.emailVerified) {
+                    cartLink.style.display = 'inline-flex'; // ПОКАЗУЄМО КОРЗИНУ
+                    updateCartCount(); // Оновлюємо лічильник
+                } else {
                     alert("Ваш акаунт ще не активовано. Будь ласка, підтвердіть пошту.");
+                    cartLink.style.display = 'none'; // ХОВАЄМО КОРЗИНУ
                 }
+                
             } else {
                 alert("Будь ласка, увійдіть, щоб побачити ваш профіль.");
                 window.location.href = 'login.html';
@@ -210,9 +218,10 @@
 
         // 2. ЗБЕРЕЖЕННЯ ДАНИХ ПРОФІЛЮ
         profileForm.addEventListener('submit', async (e) => {
-            // ... (Код не змінився)
+            // ... (Код не змінився, але додана перевірка)
             e.preventDefault();
-            if (!currentUser || !currentUser.emailVerified) {
+            if (!currentUser) return;
+            if (!currentUser.emailVerified) {
                  showStatus(generalStatusDiv, "Для збереження даних профілю спочатку підтвердіть свою пошту.", 'error');
                 return;
             }
@@ -230,9 +239,9 @@
         });
 
         // 3. ЛОГІКА ЗАВАНТАЖЕННЯ ФОТО
-        // ... (Код не змінився)
         uploadPicButton.addEventListener('click', () => photoUploadInput.click());
         photoUploadInput.addEventListener('change', (e) => {
+            // ... (Код не змінився)
             selectedFile = e.target.files[0];
             if (selectedFile) {
                 const reader = new FileReader();
@@ -246,7 +255,9 @@
             }
         });
         savePicButton.addEventListener('click', async () => {
-             if (!currentUser || !selectedFile || !currentUser.emailVerified) {
+             // ... (Код не змінився, але додана перевірка)
+             if (!currentUser || !selectedFile) return;
+             if (!currentUser.emailVerified) {
                 showStatus(generalStatusDiv, "Для завантаження фото спочатку підтвердіть свою пошту.", 'error');
                 return;
             }
@@ -267,24 +278,22 @@
 
         // 4. ВИХІД
         logoutButton.addEventListener('click', () => {
-            // ... (Код не змінився)
             auth.signOut().then(() => {
+                localStorage.removeItem('soulcraftCart'); // Очищуємо корзину при виході
                 window.location.href = 'index.html';
             }).catch((error) => console.error("Помилка виходу: ", error));
         });
         
-        // 
-        // --- 5. ОНОВЛЕНО: ЛОГІКА ДОДАВАННЯ ТОВАРУ ---
-        // 
+        // 5. ЛОГІКА ДОДАВАННЯ ТОВАРУ
         if (addProductForm) {
             addProductForm.addEventListener('submit', async (e) => {
+                // ... (Код не змінився)
                 e.preventDefault();
                 if (!currentUser) return;
 
-                // Отримуємо дані з форми
                 const productName = document.getElementById('product-name').value;
                 const productDesc = document.getElementById('product-desc').value;
-                const productStory = document.getElementById('product-story').value; // <-- НОВЕ ПОЛЕ
+                const productStory = document.getElementById('product-story').value;
                 const productCategory = document.getElementById('product-category').value;
                 const productPrice = Number(document.getElementById('product-price').value);
                 const imageFile = document.getElementById('product-image-file').files[0];
@@ -303,11 +312,10 @@
                     const task = await storageRef.put(imageFile);
                     const downloadURL = await task.ref.getDownloadURL();
                     
-                    // Зберігаємо ВСЕ у Firestore
                     await productDocRef.set({
                         name: productName,
                         description: productDesc,
-                        story: productStory, // <-- ЗБЕРІГАЄМО ІСТОРІЮ
+                        story: productStory, 
                         category: productCategory,
                         price: productPrice,
                         imageUrl: downloadURL, 
