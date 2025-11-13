@@ -1,1 +1,114 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Магазин - SoulCraft</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Підключаємо шрифти -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Lato:wght@300;400&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="index.html" class="logo-nav">SoulCraft</a>
+            <div class="nav-links">
+                <!-- Ми додамо сюди посилання на "Магазин" у Кроці 3 -->
+                <a href="shop.html" class="button">Магазин</a>
+                <a href="dashboard.html" class="button">Кабінет</a>
+                <a href="login.html" class="button">Вхід</a>
+                <a href="register.html" class="button button-primary">Реєстрація</a>
+            </div>
+        </nav>
+    </header>
 
+    <main class="content-section">
+        <h2>Магазин Витворів</h2>
+        <p>Кожен предмет унікальний. Знайдіть той, що відгукується вам.</p>
+        
+        <!-- Сюди JavaScript завантажить товари з бази даних -->
+        <div id="product-grid" class="gallery-grid">
+            <!-- Індикатор завантаження -->
+            <p id="loading-indicator">Завантаження витворів...</p>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 SoulCraft. Усі права захищені.</p>
+    </footer>
+
+    <!-- ======== БЛОК FIREBASE ======== -->
+    
+    <!-- Підключаємо ТІЛЬКИ ті сервіси, що нам потрібні -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+
+    <script>
+        // ВАШІ КЛЮЧІ
+        const firebaseConfig = {
+          apiKey: "AIzaSyDI1y9z3JqGwjOYacWsHZgPhU038YBz9pA",
+          authDomain: "soulcraft-project.firebaseapp.com",
+          projectId: "soulcraft-project",
+          storageBucket: "soulcraft-project.firebasestorage.app",
+          messagingSenderId: "442181022403",
+          appId: "1:442181022403:web:590c4523ebcc12213c2876"
+        };
+
+        // Ініціалізуємо Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // Функція для завантаження товарів
+        async function loadProducts() {
+            const grid = document.getElementById('product-grid');
+            const indicator = document.getElementById('loading-indicator');
+            
+            // 1. Отримуємо дані з колекції 'products'
+            try {
+                const snapshot = await db.collection('products').get();
+                
+                if (snapshot.empty) {
+                    indicator.textContent = 'Наразі немає товарів у магазині.';
+                    return;
+                }
+
+                // 2. Очищуємо сітку (ховаємо "Завантаження...")
+                grid.innerHTML = '';
+
+                // 3. Створюємо HTML для кожного товару
+                snapshot.forEach(doc => {
+                    const product = doc.data();
+                    
+                    // Створюємо картку товару (використовуємо класи зі style.css)
+                    const card = document.createElement('div');
+                    card.className = 'gallery-card';
+                    card.innerHTML = `
+                        <img src="${product.imageUrl}" alt="${product.name}">
+                        <div class="card-content">
+                            <h3>${product.name}</h3>
+                            <p>${product.description}</p>
+                            
+                            <!-- Новий блок для ціни та кнопки -->
+                            <div class="product-footer">
+                                <span class="product-price">${product.price} грн</span>
+                                <button class="button button-primary buy-button">Купити</button>
+                            </div>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+
+            } catch (error) {
+                console.error("Помилка завантаження товарів: ", error);
+                indicator.textContent = 'Не вдалося завантажити товари. Спробуйте пізніше.';
+            }
+        }
+
+        // Запускаємо функцію, коли сторінка завантажиться
+        window.onload = loadProducts;
+
+    </script>
+</body>
+</html>
