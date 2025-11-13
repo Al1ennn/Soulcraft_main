@@ -6,12 +6,14 @@
     <title>SoulCraft - Головна</title>
     <link rel="stylesheet" href="style.css">
     
+    <!-- Підключаємо шрифти для магічної атмосфери -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Lato:wght@300;400&display=swap" rel="stylesheet">
 </head>
 <body>
 
+    <!-- ======== HEADER (Навігація) ======== -->
     <header>
         <nav>
             <a href="index.html" class="logo-nav">SoulCraft</a>
@@ -19,15 +21,18 @@
             <div class="nav-links">
                 <a href="shop.html" class="button">Магазин</a>
                 
+                <!-- Кнопки для тих, хто НЕ увійшов -->
                 <a href="login.html" class="button" id="login-link">Вхід</a>
                 <a href="register.html" class="button button-primary" id="register-link">Реєстрація</a>
                 
+                <!-- Кнопки для тих, хто УВІЙШОВ (приховані за замовчуванням) -->
                 <a href="dashboard.html" class="button button-primary" id="dashboard-link" style="display: none;">Мій Кабінет</a>
                 <button id="logout-link" class="button" style="display: none;">Вийти</button>
             </div>
         </nav>
     </header>
 
+    <!-- ======== HERO SECTION (Головний екран) ======== -->
     <main class="hero-section">
         <div class="hero-content">
             <img src="123" alt="Логотип SoulCraft" class="hero-logo">
@@ -41,48 +46,66 @@
         </a>
     </main>
 
+    <!-- ======== ABOUT SECTION (Про нас) ======== -->
     <section id="about" class="content-section">
         <h2>Про Майстерню</h2>
         <p>SoulCraft — це не просто предмети. Це втілення пристрасті, магії та годин кропіткої ручної роботи. Кожен витвір унікальний і несе в собі частинку душі майстра.</p>
     </section>
 
+    <!-- 
+      ======== FEATURED SECTION (ВИПРАВЛЕНО) ======== 
+      Я додав "?v=2" до src, щоб змусити браузер
+      завантажити нові копії файлів.
+    -->
     <section id="featured" class="featured-section">
         <h2>Наші Вироби</h2>
         <div class="gallery-grid">
+            
+            <!-- Картка 1 (ВИПРАВЛЕНО) -->
             <div class="gallery-card">
-                <img src="item1.png" alt="Підвіска 'Зоряний Камінь'">
+                <img src="item1.png?v=2" alt="Підвіска 'Зоряний Камінь'">
                 <div class="card-content">
                     <h3>Підвіска 'Зоряний Камінь'</h3>
                     <p>Ручна робота зі срібла та лабрадориту.</p>
                 </div>
             </div>
+            
+            <!-- Картка 2 (ВИПРАВЛЕНО) -->
             <div class="gallery-card">
-                <img src="item2.png" alt="Унікальна Дерев'яна Скринька">
+                <img src="item2.png?v=2" alt="Унікальна Дерев'яна Скринька">
                 <div class="card-content">
                     <h3>Унікальна Скринька</h3>
                     <p>Виготовлена з горіха, з оксамитовою підкладкою.</p>
                 </div>
             </div>
+            
+            <!-- Картка 3 (ВИПРАВЛЕНО) -->
             <div class="gallery-card">
-                <img src="item3.png" alt="Ефірні Олії Ручної Роботи">
+                <img src="item3.png?v=2" alt="Ефірні Олії Ручної Роботи">
                 <div class="card-content">
                     <h3>Ефірні Олії</h3>
                     <p>Натуральні аромати для дому та душі.</p>
                 </div>
             </div>
+            
         </div>
     </section>
 
+    <!-- ======== CTA SECTION (Заклик до дії) ======== -->
     <section class="cta-section">
         <h2>Знайдіть Свій Скарб</h2>
         <p>Дослідіть повну колекцію або зареєструйтесь, щоб замовити унікальний витвір, створений саме для вас.</p>
         <a href="register.html" class="button button-primary">Створити Акаунт</a>
     </section>
 
+    <!-- ======== FOOTER (Підвал) ======== -->
     <footer>
         <p>&copy; 2025 SoulCraft. Усі права захищені.</p>
     </footer>
 
+    <!-- 
+      --- FIREBASE AUTH ДЛЯ НАВІГАЦІЇ ---
+    -->
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
     <script>
