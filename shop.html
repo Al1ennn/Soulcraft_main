@@ -27,6 +27,10 @@
         <h2>Магазин Витворів</h2>
         <p>Кожен предмет унікальний. Знайдіть той, що відгукується вам.</p>
         
+        <div class="search-container">
+            <input type="text" id="search-bar" placeholder="Шукати за назвою або описом...">
+        </div>
+        
         <div id="product-grid" class="gallery-grid">
             <p id="loading-indicator">Завантаження витворів...</p>
         </div>
@@ -56,9 +60,7 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // 
         // --- ЛОГІКА ДЛЯ КНОПОК НАВІГАЦІЇ ---
-        // 
         const loginLink = document.getElementById('login-link');
         const registerLink = document.getElementById('register-link');
         const dashboardLink = document.getElementById('dashboard-link');
@@ -82,23 +84,54 @@
             logoutLink.addEventListener('click', () => {
                 auth.signOut().then(() => {
                     window.location.reload(); 
-                }).catch((error) => {
-                    console.error("Помилка виходу: ", error);
-                });
+                }).catch((error) => console.error("Помилка виходу: ", error));
             });
         }
 
         // 
-        // --- ОНОВЛЕНО: ЛОГІКА ЗАВАНТАЖЕННЯ ТОВАРІВ ---
+        // --- ОНОВЛЕНО: ЛОГІКА МАГАЗИНУ ТА ПОШУКУ ---
         //
-        async function loadProducts() {
-            const grid = document.getElementById('product-grid');
-            const indicator = document.getElementById('loading-indicator');
+        
+        const grid = document.getElementById('product-grid');
+        const indicator = document.getElementById('loading-indicator');
+        const searchBar = document.getElementById('search-bar');
+        
+        let allProducts = []; // Зберігаємо всі завантажені товари тут
+
+        // 1. Функція, що малює товари на сторінці
+        function displayProducts(products) {
+            grid.innerHTML = ''; // Очищуємо сітку
             
+            if (products.length === 0) {
+                 grid.innerHTML = '<p>Товарів не знайдено.</p>';
+                 return;
+            }
+
+            products.forEach(product => {
+                const card = document.createElement('a'); // <--- ЗМІНЕНО НА 'a' (ПОСИЛАННЯ)
+                card.className = 'gallery-card product-link';
+                
+                // --- ОНОВЛЕНО: Додаємо ID товару в посилання ---
+                card.href = `product.html?id=${product.id}`; 
+                
+                card.innerHTML = `
+                    <img src="${product.imageUrl}" alt="${product.name}">
+                    <div class="card-content">
+                        <h3>${product.name}</h3>
+                        <p>${product.description}</p>
+                        
+                        <div class="product-footer">
+                            <span class="product-price">${product.price} грн</span>
+                            </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // 2. Функція, що завантажує товари з Firebase
+        async function loadProducts() {
             try {
-                // 
-                // --- ОНОВЛЕНО: Ми завантажуємо ТІЛЬКИ схвалені товари ---
-                // 
                 const snapshot = await db.collection('products')
                                           .where("status", "==", "approved")
                                           .get();
@@ -108,34 +141,34 @@
                     return;
                 }
 
-                grid.innerHTML = '';
-
+                // Зберігаємо товари у масив
                 snapshot.forEach(doc => {
-                    const product = doc.data();
-                    
-                    const card = document.createElement('div');
-                    card.className = 'gallery-card';
-                    // --- ОНОВЛЕНО: Тепер imageUrl - це повний URL зі Storage ---
-                    card.innerHTML = `
-                        <img src="${product.imageUrl}" alt="${product.name}">
-                        <div class="card-content">
-                            <h3>${product.name}</h3>
-                            <p>${product.description}</p>
-                            
-                            <div class="product-footer">
-                                <span class="product-price">${product.price} грн</span>
-                                <button class="button button-primary buy-button">Купити</button>
-                            </div>
-                        </div>
-                    `;
-                    grid.appendChild(card);
+                    allProducts.push({ id: doc.id, ...doc.data() });
                 });
+
+                displayProducts(allProducts); // Показуємо всі товари
 
             } catch (error) {
                 console.error("Помилка завантаження товарів: ", error);
                 indicator.textContent = 'Не вдалося завантажити товари. Спробуйте пізніше.';
             }
         }
+
+        // 3. Обробник подій для ПОШУКУ
+        searchBar.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase(); // Беремо текст пошуку
+
+            // Фільтруємо
+            const filteredProducts = allProducts.filter(product => {
+                return product.name.toLowerCase().includes(searchTerm) || 
+                       product.description.toLowerCase().includes(searchTerm);
+            });
+            
+            // Відображаємо
+            displayProducts(filteredProducts);
+        });
+
+        // Запускаємо завантаження
         window.onload = loadProducts;
 
     </script>
