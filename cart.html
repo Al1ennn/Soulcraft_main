@@ -15,7 +15,10 @@
             <a href="index.html" class="logo-nav">SoulCraft</a>
             <div class="nav-links">
                 <a href="shop.html" class="button">Магазин</a>
-                <a href="cart.html" class="button" id="cart-link">Корзина</a>
+                <a href="cart.html" class="button" id="cart-link" style="display: none;">
+                    Корзина
+                    <span id="cart-count" class="cart-count-badge" style="display: none;">0</span>
+                </a>
                 <a href="login.html" class="button" id="login-link">Вхід</a>
                 <a href="register.html" class="button button-primary" id="register-link">Реєстрація</a>
                 <a href="dashboard.html" class="button button-primary" id="dashboard-link" style="display: none;">Мій Кабінет</a>
@@ -62,38 +65,15 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // --- ЛОГІКА ДЛЯ КНОПОК НАВІГАЦІЇ ---
+        // --- Елементи навігації ---
         const loginLink = document.getElementById('login-link');
         const registerLink = document.getElementById('register-link');
         const dashboardLink = document.getElementById('dashboard-link');
         const logoutLink = document.getElementById('logout-link');
+        const cartLink = document.getElementById('cart-link');
+        const cartCountBadge = document.getElementById('cart-count');
 
-        auth.onAuthStateChanged((user) => {
-            if (user && user.emailVerified) {
-                loginLink.style.display = 'none';
-                registerLink.style.display = 'none';
-                dashboardLink.style.display = 'inline-block';
-                logoutLink.style.display = 'inline-block';
-            } else {
-                loginLink.style.display = 'inline-block';
-                registerLink.style.display = 'inline-block';
-                dashboardLink.style.display = 'none';
-                logoutLink.style.display = 'none';
-            }
-        });
-        
-        if (logoutLink) {
-            logoutLink.addEventListener('click', () => {
-                auth.signOut().then(() => {
-                    window.location.href = 'index.html';
-                }).catch((error) => console.error("Помилка виходу: ", error));
-            });
-        }
-        
-        // 
-        // --- ЛОГІКА ЗАВАНТАЖЕННЯ КОРЗИНИ ---
-        //
-        
+        // --- Елементи корзини ---
         const container = document.getElementById('cart-items-container');
         const loading = document.getElementById('cart-loading');
         const summary = document.getElementById('cart-summary');
@@ -101,22 +81,73 @@
         
         let totalPrice = 0;
 
-        // 1. Функція, що отримує ID з localStorage
+        // --- 1. ОНОВЛЕННЯ ЛІЧИЛЬНИКА КОРЗИНИ ---
         function getCartProductIds() {
             return JSON.parse(localStorage.getItem('soulcraftCart')) || [];
         }
 
-        // 2. Функція для видалення товару
+        function updateCartCount() {
+            const cart = getCartProductIds();
+            if (cart.length > 0) {
+                cartCountBadge.textContent = cart.length;
+                cartCountBadge.style.display = 'flex'; // Використовуємо flex для центрування
+            } else {
+                cartCountBadge.style.display = 'none';
+            }
+        }
+        
+        // --- 2. ГОЛОВНА ФУНКЦІЯ (АВТЕНТИФІКАЦІЯ) ---
+        auth.onAuthStateChanged((user) => {
+            if (user && user.emailVerified) {
+                // Користувач увійшов І верифікований
+                loginLink.style.display = 'none';
+                registerLink.style.display = 'none';
+                dashboardLink.style.display = 'inline-block';
+                logoutLink.style.display = 'inline-block';
+                cartLink.style.display = 'inline-flex'; // <-- ПОКАЗУЄМО КОРЗИНУ (flex для лічильника)
+                
+                updateCartCount(); // Оновлюємо лічильник
+                loadCartItems(); // Завантажуємо товари корзини
+                
+            } else {
+                // Користувач НЕ увійшов АБО НЕ верифікований
+                // Приховуємо все, що для залогінених
+                loginLink.style.display = 'inline-block';
+                registerLink.style.display = 'inline-block';
+                dashboardLink.style.display = 'none';
+                logoutLink.style.display = 'none';
+                cartLink.style.display = 'none'; // <-- ХОВАЄМО КОРЗИНУ
+
+                // --- ЗАХИСТ СТОРІНКИ ---
+                // Якщо він не залогінений, відправляємо його геть
+                alert("Будь ласка, увійдіть (та підтвердіть пошту), щоб переглянути корзину.");
+                window.location.href = 'login.html';
+            }
+        });
+        
+        // --- 3. ВИХІД ---
+        if (logoutLink) {
+            logoutLink.addEventListener('click', () => {
+                auth.signOut().then(() => {
+                    localStorage.removeItem('soulcraftCart'); // Очищуємо корзину при виході
+                    window.location.href = 'index.html';
+                }).catch((error) => console.error("Помилка виходу: ", error));
+            });
+        }
+        
+        // --- 4. ЛОГІКА ЗАВАНТАЖЕННЯ КОРЗИНИ ---
+        
+        // Функція для видалення товару
         function removeFromCart(productId) {
             let cart = getCartProductIds();
-            const newCart = cart.filter(id => id !== productId); // Створюємо новий масив без цього ID
+            const newCart = cart.filter(id => id !== productId); 
             localStorage.setItem('soulcraftCart', JSON.stringify(newCart));
             
             alert('Товар видалено з корзини.');
-            window.location.reload(); // Перезавантажуємо сторінку, щоб оновити список
+            window.location.reload(); 
         }
 
-        // 3. Основна функція завантаження
+        // Основна функція завантаження
         async function loadCartItems() {
             const productIds = getCartProductIds();
 
@@ -125,7 +156,6 @@
                 return;
             }
 
-            // Очищуємо контейнер
             container.innerHTML = '';
             
             for (const id of productIds) {
@@ -135,9 +165,8 @@
 
                     if (doc.exists) {
                         const product = doc.data();
-                        totalPrice += product.price; // Додаємо до загальної суми
+                        totalPrice += product.price; 
 
-                        // Створюємо HTML для товару
                         const itemRow = document.createElement('div');
                         itemRow.className = 'cart-item-row';
                         itemRow.innerHTML = `
@@ -156,14 +185,10 @@
                 }
             }
             
-            // Ховаємо завантаження
             loading.style.display = 'none';
-            
-            // Показуємо загальну суму
             totalPriceEl.textContent = `Загальна сума: ${totalPrice} грн`;
             summary.style.display = 'flex';
 
-            // Навішуємо обробники на кнопки "Видалити"
             document.querySelectorAll('.remove-from-cart-btn').forEach(button => {
                 button.addEventListener('click', (e) => {
                     const idToRemove = e.target.getAttribute('data-id');
@@ -172,7 +197,7 @@
             });
         }
         
-        loadCartItems();
+        // (Запускаємо завантаження ТІЛЬКИ з onAuthStateChanged, коли впевнені, що користувач залогінений)
 
     </script>
 </body>
