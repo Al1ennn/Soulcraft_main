@@ -497,3 +497,28 @@ footer {
         font-size: 18px;
     }
 }
+/* ---------------------------------- */
+/* СТИЛІ ДЛЯ МАГАЗИНУ (shop.html) */
+/* ---------------------------------- */
+
+.product-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #2a2a2a;
+}
+
+.product-price {
+    font-size: 24px;
+    font-weight: bold;
+    color: var(--color-primary);
+    font-family: var(--font-title);
+}
+
+.buy-button {
+    padding: 8px 15px;
+    font-size: 14px;
+    margin-left: 0; /* Скидаємо відступ */
+}
