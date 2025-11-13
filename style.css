@@ -414,11 +414,7 @@ footer {
     display: none; 
 }
 
-/* --- ВИПРАВЛЕНО: ГАРАНТОВАНЕ ЦЕНТРУВАННЯ ---
-  Ми використовуємо 'display: flex' на самому
-  placeholder, щоб відцентрувати SVG всередині.
-  Додано !important для надійності.
-*/
+/* --- ВИПРАВЛЕНО: ГАРАНТОВАНЕ ЦЕНТРУВАННЯ --- */
 .profile-pic-placeholder {
     width: 200px;
     height: 200px;
@@ -703,16 +699,24 @@ input[type="file"]::-webkit-file-upload-button {
 input[type="file"]::-webkit-file-upload-button:hover {
      opacity: 0.9;
 }
+
 /* ---------------------------------- */
-/* 11. СТИЛІ ДЛЯ ПОШУКУ (shop.html) */
+/* 11. СТИЛІ ДЛЯ SELECT (Фільтри / Категорії) */
+/* (Це виправить біле меню) */
 /* ---------------------------------- */
-.search-container {
+
+/* Контейнер фільтрів у магазині */
+.filter-container {
+    display: flex;
+    gap: 20px;
     margin-bottom: 30px;
+    flex-wrap: wrap;
 }
 
+/* Поле пошуку */
 #search-bar {
-    width: 100%;
-    max-width: 600px;
+    flex: 2; /* Робимо поле пошуку ширшим */
+    min-width: 250px;
     padding: 15px;
     font-size: 16px;
     border: 2px solid #3a3a3a;
@@ -728,11 +732,38 @@ input[type="file"]::-webkit-file-upload-button:hover {
     box-shadow: 0 0 10px rgba(224, 202, 154, 0.2);
 }
 
-/* Робимо картки в магазині клікабельними */
-.product-link {
-    text-decoration: none;
-    color: inherit;
-    display: block; /* Важливо для 'a' */
+/* Загальний стиль для select (у магазині та в кабінеті) */
+select {
+    flex: 1; /* Фільтр займає 1 частину */
+    min-width: 200px;
+    padding: 15px;
+    font-size: 16px;
+    border: 2px solid #3a3a3a;
+    border-radius: 5px;
+    background-color: #101010;
+    color: var(--color-text);
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+    font-family: var(--font-body);
+    -webkit-appearance: none; /* Прибираємо стандартну стрілку */
+    -moz-appearance: none;
+    appearance: none;
+    /* Додаємо свою стрілку */
+    background-image: url('data:image/svg+xml;utf8,<svg fill="%239a8c78" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+}
+
+select:focus {
+    border-color: var(--color-primary);
+    outline: none;
+    box-shadow: 0 0 10px rgba(224, 202, 154, 0.2);
+}
+
+/* Стиль для <select> у панелі продавця (трохи інші відступи) */
+.seller-panel select {
+    width: 100%;
+    margin-bottom: 20px;
 }
 
 /* ---------------------------------- */
@@ -817,6 +848,7 @@ input[type="file"]::-webkit-file-upload-button:hover {
     font-size: 18px;
     margin-top: 30px;
 }
+
 /* ---------------------------------- */
 /* 13. СТИЛІ ДЛЯ ІСТОРІЇ ТОВАРУ (product.html) */
 /* ---------------------------------- */
