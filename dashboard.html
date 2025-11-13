@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Особистий кабінет - SoulCraft</title>
     <link rel="stylesheet" href="style.css">
-    <!-- Підключаємо шрифти -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Lato:wght@300;400&display=swap" rel="stylesheet">
@@ -23,74 +22,65 @@
 
     <main class="dashboard-container">
         
-        <!-- Секція для відображення загальних статусів (Успіх/Помилка) -->
+        <div class="tab-nav">
+            <button class="tab-button active" data-tab="profile-tab">Ваш профіль</button>
+            <button class="tab-button" data-tab="seller-tab" id="seller-tab-button" style="display: none;">Панель Продавця</button>
+        </div>
+
         <div id="general-status" class="status-message" style="display:none;"></div>
 
-        <!-- 
-          --- НОВА СЕКЦІЯ: ПАНЕЛЬ ПРОДАВЦЯ ---
-          (Буде прихована за замовчуванням)
-        -->
-        <section id="seller-panel" class="seller-panel" style="display: none;">
-            <h2>Панель Продавця</h2>
-            <form id="add-product-form">
-                <h3>Додати новий товар</h3>
+        <div id="profile-tab" class="tab-content active">
+            <h1>Ваш профіль</h1>
+            <div class="profile-layout">
                 
-                <label for="product-name">Назва товару</label>
-                <input type="text" id="product-name" required>
-                
-                <label for="product-desc">Опис товару</label>
-                <textarea id="product-desc" rows="3" required></textarea>
-                
-                <label for="product-price">Ціна (у грн)</label>
-                <input type="number" id="product-price" required>
-                
-                <label for="product-image">URL зображення товару</label>
-                <input type="text" id="product-image" placeholder="Наприклад: item4.jpg (має бути у вашому GitHub)" required>
-                
-                <button type="submit" class="button button-primary">Додати товар</button>
-            </form>
-        </section>
-        <!-- --- КІНЕЦЬ НОВОЇ СЕКЦІЇ --- -->
-
-
-        <h1>Ваш профіль</h1>
-        <div class="profile-layout">
-            
-            <!-- ЛІВА КОЛОНКА: ФОТО -->
-            <div class="profile-pic-container">
-                <img src="" alt="Ваше фото профілю" id="profile-pic-display" class="profile-pic">
-                <div id="profile-pic-placeholder" class="profile-pic-placeholder">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A1.5 1.5 0 0118 21.75H6.001c-.621 0-1.125-.504-1.125-1.125a1.5 1.5 0 01.624-1.507z" />
-                    </svg>
+                <div class="profile-pic-container">
+                    <img src="" alt="Ваше фото профілю" id="profile-pic-display" class="profile-pic">
+                    <div id="profile-pic-placeholder" class="profile-pic-placeholder">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A1.5 1.5 0 0118 21.75H6.001c-.621 0-1.125-.504-1.125-1.125a1.5 1.5 0 01.624-1.507z" />
+                        </svg>
+                    </div>
+                    <input type="file" id="photo-upload-input" accept="image/*" style="display: none;">
+                    <button id="upload-pic-button" class="button button-primary">Змінити фото</button>
+                    <button id="save-pic-button" class="button" style="display:none;">Зберегти фото</button>
                 </div>
-                <input type="file" id="photo-upload-input" accept="image/*" style="display: none;">
-                <button id="upload-pic-button" class="button button-primary">Змінити фото</button>
-                <button id="save-pic-button" class="button" style="display:none;">Зберегти фото</button>
-            </div>
 
-            <!-- ПРАВА КОЛОНКА: ІНФОРМАЦІЯ -->
-            <div class="profile-info-container">
-                <form id="profile-form">
-                    <label for="email-display">Email (не можна змінити)</label>
-                    <input type="email" id="email-display" disabled>
-                    
-                    <label for="name">Ваше ім'я</label>
-                    <input type="text" id="name" placeholder="Введіть ваше ім'я">
-                    
-                    <label for="city">Місто</label>
-                    <input type="text" id="city" placeholder="Звідки ви?">
-                    
-                    <label for="phone">Номер телефону</label>
-                    <input type="tel" id="phone" placeholder="+380...">
-                    
-                    <button type="submit" class="button button-primary">Зберегти профіль</button>
-                </form>
+                <div class="profile-info-container">
+                    <form id="profile-form">
+                        <label for="email-display">Email (не можна змінити)</label>
+                        <input type="email" id="email-display" disabled>
+                        <label for="name">Ваше ім'я</label>
+                        <input type="text" id="name" placeholder="Введіть ваше ім'я">
+                        <label for="city">Місто</label>
+                        <input type="text" id="city" placeholder="Звідки ви?">
+                        <label for="phone">Номер телефону</label>
+                        <input type="tel" id="phone" placeholder="+380...">
+                        <button type="submit" class="button button-primary">Зберегти профіль</button>
+                    </form>
+                </div>
             </div>
         </div>
+
+        <div id="seller-tab" class="tab-content">
+            <section id="seller-panel" class="seller-panel">
+                <h2>Панель Продавця</h2>
+                <form id="add-product-form">
+                    <h3>Додати новий товар</h3>
+                    <label for="product-name">Назва товару</label>
+                    <input type="text" id="product-name" required>
+                    <label for="product-desc">Опис товару</label>
+                    <textarea id="product-desc" rows="3" required></textarea>
+                    <label for="product-price">Ціна (у грн)</label>
+                    <input type="number" id="product-price" required>
+                    <label for="product-image">URL зображення товару</label>
+                    <input type="text" id="product-image" placeholder="Наприклад: item4.jpg (має бути у вашому GitHub)" required>
+                    <button type="submit" class="button button-primary">Додати товар</button>
+                </form>
+            </section>
+        </div>
+
     </main>
 
-    <!-- ======== БЛОК FIREBASE ======== -->
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
@@ -127,9 +117,14 @@
         const savePicButton = document.getElementById('save-pic-button');
         const generalStatusDiv = document.getElementById('general-status');
 
-        // НОВІ елементи панелі продавця
+        // Елементи панелі продавця
         const sellerPanel = document.getElementById('seller-panel');
         const addProductForm = document.getElementById('add-product-form');
+        
+        // НОВІ Елементи для вкладок
+        const tabButtons = document.querySelectorAll('.tab-button');
+        const tabContents = document.querySelectorAll('.tab-content');
+        const sellerTabButton = document.getElementById('seller-tab-button');
 
         let currentUser = null; 
         let selectedFile = null; 
@@ -144,14 +139,18 @@
             }
         }
 
-        // ГОЛОВНА ФУНКЦІЯ
+        // 
+        // --- ГОЛОВНА ФУНКЦІЯ (АВТЕНТИФІКАЦІЯ) ---
+        // 
         auth.onAuthStateChanged((user) => {
-            if (user && user.emailVerified) {
+            if (user) {
                 currentUser = user;
                 loadUserProfile(user.uid, user.email);
-            } else if (user && !user.emailVerified) {
-                alert("Ваш акаунт ще не активовано. Будь ласка, підтвердіть пошту.");
-                window.location.href = 'login.html'; // Повертаємо логіку виходу
+
+                if (!user.emailVerified) {
+                    alert("Ваш акаунт ще не активовано. До цього часу ви можете лише переглядати профіль. Будь ласка, підтвердіть пошту.");
+                }
+                
             } else {
                 alert("Будь ласка, увійдіть, щоб побачити ваш профіль.");
                 window.location.href = 'login.html';
@@ -181,24 +180,25 @@
                 
                 // --- ОНОВЛЕНО: ПЕРЕВІРКА РОЛІ ---
                 if (data.role === 'seller') {
-                    sellerPanel.style.display = 'block'; // Показуємо панель продавця!
+                    sellerTabButton.style.display = 'inline-block'; // Показуємо вкладку "Панель Продавця"
                 }
                 
             } else {
-                // Це не повинно трапитись, бо ми створюємо doc при реєстрації
-                console.error("Критична помилка: Документ користувача не знайдено!");
+                userDocRef.set({ name: '', city: '', phone: '' }); 
                 profilePicPlaceholder.style.display = 'block';
             }
         }
-        
-        // ... (Код для Збереження профілю та Завантаження фото залишається той самий) ...
-        
+
         // 2. ЗБЕРЕЖЕННЯ ДАНИХ ПРОФІЛЮ
         profileForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             if (!currentUser) return;
-            // ... (ваш код збереження профілю тут ... )
-             const userDocRef = db.collection('users').doc(currentUser.uid);
+            if (!currentUser.emailVerified) {
+                showStatus(generalStatusDiv, "Для збереження даних профілю спочатку підтвердіть свою пошту.", 'error');
+                return;
+            }
+
+            const userDocRef = db.collection('users').doc(currentUser.uid);
              try {
                 await userDocRef.set({
                     name: nameInput.value,
@@ -227,8 +227,11 @@
             }
         });
         savePicButton.addEventListener('click', async () => {
-             // ... (ваш код збереження фото тут ... )
              if (!currentUser || !selectedFile) return;
+             if (!currentUser.emailVerified) {
+                showStatus(generalStatusDiv, "Для завантаження фото спочатку підтвердіть свою пошту.", 'error');
+                return;
+            }
              savePicButton.textContent = "Завантаження...";
              const storageRef = storage.ref(`profile_pics/${currentUser.uid}`);
              try {
@@ -243,7 +246,6 @@
              }
         });
 
-
         // 4. ВИХІД
         logoutButton.addEventListener('click', () => {
             auth.signOut().then(() => {
@@ -251,15 +253,12 @@
             }).catch((error) => console.error("Помилка виходу: ", error));
         });
         
-        // 
-        // --- НОВА ФУНКЦІЯ: ДОДАВАННЯ ТОВАРУ (ДЛЯ ПРОДАВЦІВ) ---
-        // 
+        // 5. ЛОГІКА ДОДАВАННЯ ТОВАРУ
         if (addProductForm) {
             addProductForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 if (!currentUser) return;
 
-                // Отримуємо дані з форми
                 const productName = document.getElementById('product-name').value;
                 const productDesc = document.getElementById('product-desc').value;
                 const productPrice = Number(document.getElementById('product-price').value);
@@ -271,24 +270,41 @@
                 }
                 
                 try {
-                    // Додаємо новий документ в колекцію 'products'
                     await db.collection('products').add({
                         name: productName,
                         description: productDesc,
                         price: productPrice,
                         imageUrl: productImageUrl,
-                        sellerId: currentUser.uid // Зберігаємо ID продавця
+                        sellerId: currentUser.uid 
                     });
                     
                     showStatus(generalStatusDiv, "Товар успішно додано!", 'success');
-                    addProductForm.reset(); // Очищуємо форму
+                    addProductForm.reset();
                     
                 } catch (error) {
-                    console.error("Помилка додавання товару: ", error);
                     showStatus(generalStatusDiv, "Помилка додавання товару: " + error.message, 'error');
                 }
             });
         }
+        
+        // 
+        // --- НОВА ЛОГІКА ДЛЯ ВКЛАДОК ---
+        // 
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                // 1. Робимо всі кнопки неактивними
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                // 2. Робимо натиснуту кнопку активною
+                button.classList.add('active');
+                
+                // 3. Ховаємо весь контент
+                tabContents.forEach(content => content.classList.remove('active'));
+                
+                // 4. Показуємо контент, пов'язаний з кнопкою
+                const tabId = button.getAttribute('data-tab');
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
 
     </script>
 </body>
