@@ -41,12 +41,11 @@ img {
 
 /* ---------------------------------- */
 /* 1. ЗАГАЛЬНІ КОМПОНЕНТИ (Header, Footer, Buttons) */
-/* (Використовуються на ВСІХ сторінках) */
 /* ---------------------------------- */
 
 /* --- Header / Nav --- */
 header {
-    background-color: rgba(18, 18, 18, 0.8); /* Напівпрозорий фон */
+    background-color: rgba(18, 18, 18, 0.8);
     backdrop-filter: blur(10px);
     padding: 20px 0;
     position: fixed;
@@ -90,7 +89,6 @@ nav {
     cursor: pointer;
     font-family: var(--font-body);
 }
-/* Виправлення відступу для першої кнопки */
 .nav-links .button:first-child {
   margin-left: 0;
 }
@@ -131,8 +129,6 @@ footer {
     justify-content: center;
     align-items: center;
     text-align: center;
-    
-    /* Крутий фон - темна текстура майстерні/алхіміка */
     background-image: linear-gradient(rgba(18, 18, 18, 0.8), rgba(18, 18, 18, 1)), url('https://images.unsplash.com/photo-1542189345-0593688175b9?q=80&w=1974&auto=format&fit=crop');
     background-size: cover;
     background-position: center;
@@ -144,7 +140,7 @@ footer {
     height: auto;
     margin-bottom: 10px;
     filter: drop-shadow(0 0 25px rgba(224, 202, 154, 0.4));
-    border-radius: 50%; /* Залишаємо круг, як у лого */
+    border-radius: 50%; 
     border: 2px solid var(--color-primary);
 }
 
@@ -418,19 +414,26 @@ footer {
     display: none; 
 }
 
+/* --- ВИПРАВЛЕНО: ГАРАНТОВАНЕ ЦЕНТРУВАННЯ ---
+  Ми використовуємо 'display: flex' на самому
+  placeholder, щоб відцентрувати SVG всередині.
+*/
 .profile-pic-placeholder {
     width: 200px;
     height: 200px;
     border-radius: 50%;
     background-color: #101010;
     border: 4px dashed var(--color-secondary);
+    
+    /* Додані стилі для центрування: */
     display: flex;
     justify-content: center;
     align-items: center;
 }
 .profile-pic-placeholder svg {
-    width: 80px !important; 
-    height: 80px !important;
+    /* Прибираємо !important, оскільки flex-центрування надійніше */
+    width: 80px; 
+    height: 80px;
     color: var(--color-secondary);
 }
 
@@ -578,7 +581,6 @@ footer {
 
 /* ---------------------------------- */
 /* 8. СТИЛІ ДЛЯ ВКЛАДОК (dashboard.html) */
-/* (НОВІ СТИЛІ) */
 /* ---------------------------------- */
 .tab-nav {
     display: flex;
@@ -586,7 +588,6 @@ footer {
     margin-bottom: 30px;
 }
 .tab-button {
-    /* Використовуємо стилі звичайних кнопок, але прибираємо деякі */
     font-family: var(--font-body);
     font-size: 18px;
     font-weight: bold;
