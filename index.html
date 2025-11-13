@@ -26,6 +26,7 @@
                 
                 <a href="login.html" class="button" id="login-link">Вхід</a>
                 <a href="register.html" class="button button-primary" id="register-link">Реєстрація</a>
+
                 <a href="dashboard.html" class="button button-primary" id="dashboard-link" style="display: none;">Мій Кабінет</a>
                 <button id="logout-link" class="button" style="display: none;">Вийти</button>
             </div>
@@ -34,15 +35,22 @@
 
     <main class="hero-section">
         <div class="hero-content">
-            <img src="logo.jpg" alt="Логотип SoulCraft" class="hero-logo">
+            <img src="logo.jpg" alt="Логотип SoulCraft" class="hero-logo" onerror="this.style.display='none'">
+            
             <h1 class="hero-title">SoulCraft</h1>
             <p class="hero-slogan">Унікальні витвори, створені з душею</p>
+
+            <div style="margin-top: 30px;">
+                <a href="register.html" class="button button-primary" id="hero-join-btn">Приєднатися до нас</a>
+                <a href="shop.html" class="button button-primary" id="hero-shop-btn" style="display: none;">Перейти до магазину</a>
+            </div>
         </div>
-        <a href="#about" class="scroll-down">
+
+        <div class="scroll-down">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="30">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 5.25l-7.5 7.5-7.5-7.5m15 6l-7.5 7.5-7.5-7.5" />
             </svg>
-        </a>
+        </div>
     </main>
 
     <section id="about" class="content-section">
@@ -55,7 +63,7 @@
         <div class="gallery-grid">
             
             <div class="gallery-card">
-                <img src="item1.jpg" alt="Підвіска 'Зоряний Камінь'">
+                <img src="item1.jpg" alt="Підвіска 'Зоряний Камінь'" onerror="this.src='https://via.placeholder.com/300x350?text=No+Image'">
                 <div class="card-content">
                     <h3>Підвіска 'Зоряний Камінь'</h3>
                     <p>Ручна робота зі срібла та лабрадориту.</p>
@@ -63,7 +71,7 @@
             </div>
             
             <div class="gallery-card">
-                <img src="item2.jpg" alt="Унікальна Дерев'яна Скринька">
+                <img src="item2.jpg" alt="Унікальна Дерев'яна Скринька" onerror="this.src='https://via.placeholder.com/300x350?text=No+Image'">
                 <div class="card-content">
                     <h3>Унікальна Скринька</h3>
                     <p>Виготовлена з горіха, з оксамитовою підкладкою.</p>
@@ -71,7 +79,7 @@
             </div>
             
             <div class="gallery-card">
-                <img src="item3.jpg" alt="Ефірні Олії Ручної Роботи">
+                <img src="item3.jpg" alt="Ефірні Олії Ручної Роботи" onerror="this.src='https://via.placeholder.com/300x350?text=No+Image'">
                 <div class="card-content">
                     <h3>Ефірні Олії</h3>
                     <p>Натуральні аромати для дому та душі.</p>
@@ -82,9 +90,10 @@
     </section>
 
     <section class="cta-section">
-        <h2>Знайдіть Свій Скарб</h2>
-        <p>Дослідіть повну колекцію або зареєструйтесь, щоб замовити унікальний витвір, створений саме для вас.</p>
-        <a href="register.html" class="button button-primary">Створити Акаунт</a>
+        <h2 id="cta-title">Знайдіть Свій Скарб</h2>
+        <p id="cta-text">Дослідіть повну колекцію або зареєструйтесь, щоб замовити унікальний витвір.</p>
+        
+        <a href="register.html" class="button button-primary" id="cta-btn">Створити Акаунт</a>
     </section>
 
     <footer>
@@ -107,7 +116,7 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
 
-        // Отримуємо кнопки
+        // Отримуємо елементи НАВІГАЦІЇ
         const loginLink = document.getElementById('login-link');
         const registerLink = document.getElementById('register-link');
         const dashboardLink = document.getElementById('dashboard-link');
@@ -115,7 +124,16 @@
         const cartLink = document.getElementById('cart-link');
         const cartCountBadge = document.getElementById('cart-count');
 
-        // --- НОВА ФУНКЦІЯ: ОНОВЛЕННЯ ЛІЧИЛЬНИКА КОРЗИНИ ---
+        // Отримуємо елементи HERO (Головний екран)
+        const heroJoinBtn = document.getElementById('hero-join-btn');
+        const heroShopBtn = document.getElementById('hero-shop-btn');
+
+        // Отримуємо елементи CTA (Нижній блок)
+        const ctaTitle = document.getElementById('cta-title');
+        const ctaText = document.getElementById('cta-text');
+        const ctaBtn = document.getElementById('cta-btn');
+
+        // --- ФУНКЦІЯ: ОНОВЛЕННЯ ЛІЧИЛЬНИКА КОРЗИНИ ---
         function updateCartCount() {
             const cart = JSON.parse(localStorage.getItem('soulcraftCart')) || [];
             if (cart.length > 0) {
@@ -126,23 +144,48 @@
             }
         }
 
-        // Слухач зміни стану (Залогінений чи ні?)
+        // --- ОСНОВНА ЛОГІКА ---
         auth.onAuthStateChanged((user) => {
             if (user && user.emailVerified) {
-                // Користувач увійшов І підтвердив пошту
+                // === КОРИСТУВАЧ УВІЙШОВ ===
+                
+                // 1. Навігація
                 loginLink.style.display = 'none';
                 registerLink.style.display = 'none';
                 dashboardLink.style.display = 'inline-block';
                 logoutLink.style.display = 'inline-block';
-                cartLink.style.display = 'inline-flex'; // <-- ПОКАЗУЄМО КОРЗИНУ
-                updateCartCount(); // Оновлюємо лічильник
+                cartLink.style.display = 'inline-flex';
+                updateCartCount();
+
+                // 2. Hero Section
+                heroJoinBtn.style.display = 'none';     // Ховаємо "Приєднатися"
+                heroShopBtn.style.display = 'inline-block'; // Показуємо "В магазин"
+
+                // 3. CTA Section (Внизу)
+                ctaTitle.textContent = "Ласкаво просимо додому";
+                ctaText.textContent = "Нові надходження вже чекають на вас у магазині.";
+                ctaBtn.textContent = "Переглянути Товари";
+                ctaBtn.href = "shop.html";
+
             } else {
-                // Користувач НЕ увійшов (або не підтвердив пошту)
+                // === КОРИСТУВАЧ ГІСТЬ ===
+
+                // 1. Навігація
                 loginLink.style.display = 'inline-block';
                 registerLink.style.display = 'inline-block';
                 dashboardLink.style.display = 'none';
                 logoutLink.style.display = 'none';
-                cartLink.style.display = 'none'; // <-- ХОВАЄМО КОРЗИНУ
+                cartLink.style.display = 'none';
+
+                // 2. Hero Section
+                heroJoinBtn.style.display = 'inline-block';
+                heroShopBtn.style.display = 'none';
+
+                // 3. CTA Section
+                ctaTitle.textContent = "Знайдіть Свій Скарб";
+                ctaText.textContent = "Дослідіть повну колекцію або зареєструйтесь, щоб замовити унікальний витвір.";
+                ctaBtn.textContent = "Створити Акаунт";
+                ctaBtn.href = "register.html";
             }
         });
         
@@ -150,7 +193,7 @@
         if (logoutLink) {
             logoutLink.addEventListener('click', () => {
                 auth.signOut().then(() => {
-                    localStorage.removeItem('soulcraftCart'); // Очищуємо корзину при виході
+                    localStorage.removeItem('soulcraftCart');
                     window.location.reload(); 
                 }).catch((error) => {
                     console.error("Помилка виходу: ", error);
