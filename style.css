@@ -703,3 +703,117 @@ input[type="file"]::-webkit-file-upload-button {
 input[type="file"]::-webkit-file-upload-button:hover {
      opacity: 0.9;
 }
+/* ---------------------------------- */
+/* 11. СТИЛІ ДЛЯ ПОШУКУ (shop.html) */
+/* ---------------------------------- */
+.search-container {
+    margin-bottom: 30px;
+}
+
+#search-bar {
+    width: 100%;
+    max-width: 600px;
+    padding: 15px;
+    font-size: 16px;
+    border: 2px solid #3a3a3a;
+    border-radius: 5px;
+    background-color: #101010;
+    color: var(--color-text);
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+}
+#search-bar:focus {
+    border-color: var(--color-primary);
+    outline: none;
+    box-shadow: 0 0 10px rgba(224, 202, 154, 0.2);
+}
+
+/* Робимо картки в магазині клікабельними */
+.product-link {
+    text-decoration: none;
+    color: inherit;
+    display: block; /* Важливо для 'a' */
+}
+
+/* ---------------------------------- */
+/* 12. СТИЛІ ДЛЯ СТОРІНКИ ТОВАРУ (product.html) */
+/* ---------------------------------- */
+.product-page-container {
+    max-width: 1100px;
+    margin: 120px auto 50px auto; 
+    padding: 40px;
+    background-color: var(--color-surface);
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    border: 1px solid #2a2a2a;
+}
+
+.product-detail-layout {
+    display: flex;
+    gap: 40px;
+    flex-wrap: wrap;
+}
+
+/* --- Ліва колонка (фото) --- */
+.product-image-container {
+    flex: 1;
+    min-width: 300px;
+}
+.product-image-container img {
+    width: 100%;
+    border-radius: 10px;
+    border: 2px solid #2a2a2a;
+}
+
+/* --- Права колонка (інфо) --- */
+.product-info-container {
+    flex: 1.5; /* Трохи ширша */
+    min-width: 300px;
+}
+.product-info-container h1 {
+    font-size: 42px;
+    margin-top: 0;
+    margin-bottom: 15px;
+}
+.product-info-container h3 {
+    font-size: 24px;
+    margin-top: 30px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #2a2a2a;
+    padding-bottom: 5px;
+}
+.product-info-container p {
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--color-text);
+}
+
+.product-price-large {
+    font-size: 36px;
+    font-weight: bold;
+    color: var(--color-primary);
+    font-family: var(--font-title);
+    display: block;
+    margin-bottom: 20px;
+}
+
+.seller-info-box {
+    background-color: #101010;
+    border-radius: 5px;
+    padding: 15px;
+    border: 1px solid #2a2a2a;
+}
+.seller-info-box p {
+    margin: 5px 0;
+    font-size: 16px;
+}
+.seller-info-box p strong {
+    color: var(--color-secondary);
+}
+
+#add-to-cart-button {
+    width: 100%;
+    padding: 15px;
+    font-size: 18px;
+    margin-top: 30px;
+}
