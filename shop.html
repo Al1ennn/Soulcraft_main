@@ -15,6 +15,12 @@
             <a href="index.html" class="logo-nav">SoulCraft</a>
             <div class="nav-links">
                 <a href="shop.html" class="button">Магазин</a>
+                
+                <a href="cart.html" class="button" id="cart-link" style="display: none;">
+                    Корзина
+                    <span id="cart-count" class="cart-count-badge" style="display: none;">0</span>
+                </a>
+
                 <a href="login.html" class="button" id="login-link">Вхід</a>
                 <a href="register.html" class="button button-primary" id="register-link">Реєстрація</a>
                 <a href="dashboard.html" class="button button-primary" id="dashboard-link" style="display: none;">Мій Кабінет</a>
@@ -27,8 +33,17 @@
         <h2>Магазин Витворів</h2>
         <p>Кожен предмет унікальний. Знайдіть той, що відгукується вам.</p>
         
-        <div class="search-container">
-            <input type="text" id="search-bar" placeholder="Шукати за назвою або описом...">
+        <div class="filter-container">
+            <input type="text" id="search-bar" placeholder="Шукати за назвою...">
+            <select id="category-filter">
+                <option value="all">Всі категорії</option>
+                <option value="jewelry">Прикраси</option>
+                <option value="boxes">Скриньки</option>
+                <option value="oils">Олії та Есенції</option>
+                <option value="soap">Вироби з мила</option>
+                <option value="paintings">Картини</option>
+                <option value="other">Інше</option>
+            </select>
         </div>
         
         <div id="product-grid" class="gallery-grid">
@@ -55,7 +70,6 @@
           appId: "1:442181022403:web:590c4523ebcc12213c2876"
         };
 
-        // Ініціалізуємо Firebase
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
@@ -65,6 +79,19 @@
         const registerLink = document.getElementById('register-link');
         const dashboardLink = document.getElementById('dashboard-link');
         const logoutLink = document.getElementById('logout-link');
+        const cartLink = document.getElementById('cart-link');
+        const cartCountBadge = document.getElementById('cart-count');
+
+        // --- НОВА ФУНКЦІЯ: ОНОВЛЕННЯ ЛІЧИЛЬНИКА КОРЗИНИ ---
+        function updateCartCount() {
+            const cart = JSON.parse(localStorage.getItem('soulcraftCart')) || [];
+            if (cart.length > 0) {
+                cartCountBadge.textContent = cart.length;
+                cartCountBadge.style.display = 'flex';
+            } else {
+                cartCountBadge.style.display = 'none';
+            }
+        }
 
         auth.onAuthStateChanged((user) => {
             if (user && user.emailVerified) {
@@ -72,103 +99,96 @@
                 registerLink.style.display = 'none';
                 dashboardLink.style.display = 'inline-block';
                 logoutLink.style.display = 'inline-block';
+                cartLink.style.display = 'inline-flex';
+                updateCartCount(); 
             } else {
                 loginLink.style.display = 'inline-block';
                 registerLink.style.display = 'inline-block';
                 dashboardLink.style.display = 'none';
                 logoutLink.style.display = 'none';
+                cartLink.style.display = 'none';
             }
         });
         
         if (logoutLink) {
             logoutLink.addEventListener('click', () => {
                 auth.signOut().then(() => {
+                    localStorage.removeItem('soulcraftCart'); // Очищуємо корзину при виході
                     window.location.reload(); 
                 }).catch((error) => console.error("Помилка виходу: ", error));
             });
         }
 
-        // 
-        // --- ОНОВЛЕНО: ЛОГІКА МАГАЗИНУ ТА ПОШУКУ ---
-        //
+        // --- ЛОГІКА МАГАЗИНУ ТА ФІЛЬТРІВ ---
         
         const grid = document.getElementById('product-grid');
         const indicator = document.getElementById('loading-indicator');
         const searchBar = document.getElementById('search-bar');
-        
-        let allProducts = []; // Зберігаємо всі завантажені товари тут
+        const categoryFilter = document.getElementById('category-filter');
+        let allProducts = []; 
 
-        // 1. Функція, що малює товари на сторінці
+        // 1. Функція, що малює товари
         function displayProducts(products) {
-            grid.innerHTML = ''; // Очищуємо сітку
-            
+            grid.innerHTML = ''; 
             if (products.length === 0) {
-                 grid.innerHTML = '<p>Товарів не знайдено.</p>';
+                 grid.innerHTML = '<p>Товарів, що відповідають вашому запиту, не знайдено.</p>';
                  return;
             }
-
             products.forEach(product => {
-                const card = document.createElement('a'); // <--- ЗМІНЕНО НА 'a' (ПОСИЛАННЯ)
+                const card = document.createElement('a');
                 card.className = 'gallery-card product-link';
-                
-                // --- ОНОВЛЕНО: Додаємо ID товару в посилання ---
                 card.href = `product.html?id=${product.id}`; 
-                
                 card.innerHTML = `
                     <img src="${product.imageUrl}" alt="${product.name}">
                     <div class="card-content">
                         <h3>${product.name}</h3>
                         <p>${product.description}</p>
-                        
                         <div class="product-footer">
                             <span class="product-price">${product.price} грн</span>
-                            </div>
+                        </div>
                     </div>
                 `;
                 grid.appendChild(card);
             });
         }
 
-        // 2. Функція, що завантажує товари з Firebase
+        // 2. Функція, що застосовує фільтри
+        function applyFilters() {
+            const searchTerm = searchBar.value.toLowerCase();
+            const selectedCategory = categoryFilter.value;
+
+            const filteredProducts = allProducts.filter(product => {
+                const categoryMatch = (selectedCategory === 'all') || (product.category === selectedCategory);
+                const searchMatch = product.name.toLowerCase().includes(searchTerm) || 
+                                    product.description.toLowerCase().includes(searchTerm);
+                return categoryMatch && searchMatch; 
+            });
+            displayProducts(filteredProducts);
+        }
+
+        // 3. Функція, що завантажує товари
         async function loadProducts() {
             try {
                 const snapshot = await db.collection('products')
                                           .where("status", "==", "approved")
                                           .get();
-                
                 if (snapshot.empty) {
                     indicator.textContent = 'Наразі немає схвалених товарів у магазині.';
                     return;
                 }
-
-                // Зберігаємо товари у масив
                 snapshot.forEach(doc => {
                     allProducts.push({ id: doc.id, ...doc.data() });
                 });
-
-                displayProducts(allProducts); // Показуємо всі товари
-
+                displayProducts(allProducts); 
+                indicator.style.display = 'none';
             } catch (error) {
                 console.error("Помилка завантаження товарів: ", error);
                 indicator.textContent = 'Не вдалося завантажити товари. Спробуйте пізніше.';
             }
         }
 
-        // 3. Обробник подій для ПОШУКУ
-        searchBar.addEventListener('input', (e) => {
-            const searchTerm = e.target.value.toLowerCase(); // Беремо текст пошуку
-
-            // Фільтруємо
-            const filteredProducts = allProducts.filter(product => {
-                return product.name.toLowerCase().includes(searchTerm) || 
-                       product.description.toLowerCase().includes(searchTerm);
-            });
-            
-            // Відображаємо
-            displayProducts(filteredProducts);
-        });
-
-        // Запускаємо завантаження
+        searchBar.addEventListener('input', applyFilters);
+        categoryFilter.addEventListener('change', applyFilters);
         window.onload = loadProducts;
 
     </script>
