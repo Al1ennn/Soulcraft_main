@@ -522,3 +522,7 @@ footer {
     font-size: 14px;
     margin-left: 0; /* Скидаємо відступ */
 }
+/* --- ФІКС ВІДСТУПУ КНОПОК В НАВІГАЦІЇ --- */
+.nav-links .button:first-child {
+  margin-left: 0;
+}
