@@ -20,12 +20,8 @@
             
             <div class="nav-links">
                 <a href="shop.html" class="button">Магазин</a>
-                
-                <!-- Кнопки для тих, хто НЕ увійшов -->
                 <a href="login.html" class="button" id="login-link">Вхід</a>
                 <a href="register.html" class="button button-primary" id="register-link">Реєстрація</a>
-                
-                <!-- Кнопки для тих, хто УВІЙШОВ (приховані за замовчуванням) -->
                 <a href="dashboard.html" class="button button-primary" id="dashboard-link" style="display: none;">Мій Кабінет</a>
                 <button id="logout-link" class="button" style="display: none;">Вийти</button>
             </div>
@@ -35,7 +31,9 @@
     <!-- ======== HERO SECTION (Головний екран) ======== -->
     <main class="hero-section">
         <div class="hero-content">
-            <img src="123" alt="Логотип SoulCraft" class="hero-logo">
+            
+            <!-- Посилання на 'logo.jpg' (як у вашому репозиторії) -->
+            <img src="logo.jpg" alt="Логотип SoulCraft" class="hero-logo">
             <h1 class="hero-title">SoulCraft</h1>
             <p class="hero-slogan">Унікальні витвори, створені з душею</p>
         </div>
@@ -54,34 +52,30 @@
 
     <!-- 
       ======== FEATURED SECTION (ВИПРАВЛЕНО) ======== 
-      Я додав "?v=2" до src, щоб змусити браузер
-      завантажити нові копії файлів.
+      Тепер код шукає 'item1.jpg', 'item2.jpg' та 'item3.jpg'
     -->
     <section id="featured" class="featured-section">
         <h2>Наші Вироби</h2>
         <div class="gallery-grid">
             
-            <!-- Картка 1 (ВИПРАВЛЕНО) -->
             <div class="gallery-card">
-                <img src="item1.png?v=2" alt="Підвіска 'Зоряний Камінь'">
+                <img src="item1.jpg" alt="Підвіска 'Зоряний Камінь'">
                 <div class="card-content">
                     <h3>Підвіска 'Зоряний Камінь'</h3>
                     <p>Ручна робота зі срібла та лабрадориту.</p>
                 </div>
             </div>
             
-            <!-- Картка 2 (ВИПРАВЛЕНО) -->
             <div class="gallery-card">
-                <img src="item2.png?v=2" alt="Унікальна Дерев'яна Скринька">
+                <img src="item2.jpg" alt="Унікальна Дерев'яна Скринька">
                 <div class="card-content">
                     <h3>Унікальна Скринька</h3>
                     <p>Виготовлена з горіха, з оксамитовою підкладкою.</p>
                 </div>
             </div>
             
-            <!-- Картка 3 (ВИПРАВЛЕНО) -->
             <div class="gallery-card">
-                <img src="item3.png?v=2" alt="Ефірні Олії Ручної Роботи">
+                <img src="item3.jpg" alt="Ефірні Олії Ручної Роботи">
                 <div class="card-content">
                     <h3>Ефірні Олії</h3>
                     <p>Натуральні аромати для дому та душі.</p>
@@ -119,26 +113,21 @@
           appId: "1:442181022403:web:590c4523ebcc12213c2876"
         };
 
-        // Ініціалізуємо Firebase
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
 
-        // Отримуємо кнопки
         const loginLink = document.getElementById('login-link');
         const registerLink = document.getElementById('register-link');
         const dashboardLink = document.getElementById('dashboard-link');
         const logoutLink = document.getElementById('logout-link');
 
-        // Слухач зміни стану (Залогінений чи ні?)
         auth.onAuthStateChanged((user) => {
             if (user && user.emailVerified) {
-                // Користувач увійшов І підтвердив пошту
                 loginLink.style.display = 'none';
                 registerLink.style.display = 'none';
                 dashboardLink.style.display = 'inline-block';
                 logoutLink.style.display = 'inline-block';
             } else {
-                // Користувач НЕ увійшов (або не підтвердив пошту)
                 loginLink.style.display = 'inline-block';
                 registerLink.style.display = 'inline-block';
                 dashboardLink.style.display = 'none';
@@ -146,18 +135,15 @@
             }
         });
         
-        // Обробник для кнопки "Вийти" (яку ми щойно додали)
         if (logoutLink) {
             logoutLink.addEventListener('click', () => {
                 auth.signOut().then(() => {
-                    // Успішний вихід
-                    window.location.reload(); // Перезавантажуємо сторінку
+                    window.location.reload(); 
                 }).catch((error) => {
                     console.error("Помилка виходу: ", error);
                 });
             });
         }
-
     </script>
 </body>
 </html>
