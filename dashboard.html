@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Особистий кабінет - SoulCraft</title>
     <link rel="stylesheet" href="style.css">
+    <!-- Підключаємо шрифти -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Lato:wght@300;400&display=swap" rel="stylesheet">
@@ -22,17 +23,20 @@
 
     <main class="dashboard-container">
         
+        <!-- Навігація по вкладках -->
         <div class="tab-nav">
             <button class="tab-button active" data-tab="profile-tab">Ваш профіль</button>
             <button class="tab-button" data-tab="seller-tab" id="seller-tab-button" style="display: none;">Панель Продавця</button>
         </div>
 
+        <!-- Повідомлення про статус -->
         <div id="general-status" class="status-message" style="display:none;"></div>
 
+        <!-- ВКЛАДКА 1: ПРОФІЛЬ -->
         <div id="profile-tab" class="tab-content active">
             <h1>Ваш профіль</h1>
             <div class="profile-layout">
-                
+                <!-- ... (Код профілю не змінився) ... -->
                 <div class="profile-pic-container">
                     <img src="" alt="Ваше фото профілю" id="profile-pic-display" class="profile-pic">
                     <div id="profile-pic-placeholder" class="profile-pic-placeholder">
@@ -60,6 +64,9 @@
             </div>
         </div>
 
+        <!-- 
+          --- ВКЛАДКА 2: ПАНЕЛЬ ПРОДАВЦЯ (ОНОВЛЕНО) ---
+        -->
         <div id="seller-tab" class="tab-content">
             <section id="seller-panel" class="seller-panel">
                 <h2>Панель Продавця</h2>
@@ -68,8 +75,25 @@
                     <label for="product-name">Назва товару</label>
                     <input type="text" id="product-name" required>
                     
-                    <label for="product-desc">Опис товару</label>
+                    <label for="product-desc">Короткий опис товару</label>
                     <textarea id="product-desc" rows="3" required></textarea>
+
+                    <!-- 
+                      --- НОВИЙ БЛОК: ІСТОРІЯ ПРЕДМЕТУ ---
+                    -->
+                    <label for="product-story">Історія предмету (необов'язково)</label>
+                    <textarea id="product-story" rows="5" placeholder="Розкажіть, що робить цей предмет особливим..."></textarea>
+                    
+                    <label for="product-category">Категорія</label>
+                    <select id="product-category" required>
+                        <option value="" disabled selected>Оберіть категорію</option>
+                        <option value="jewelry">Прикраси</option>
+                        <option value="boxes">Скриньки</option>
+                        <option value="oils">Олії та Есенції</option>
+                        <option value="soap">Вироби з мила</option>
+                        <option value="paintings">Картини</option>
+                        <option value="other">Інше</option>
+                    </select>
                     
                     <label for="product-price">Ціна (у грн)</label>
                     <input type="number" id="product-price" required>
@@ -84,6 +108,8 @@
 
     </main>
 
+    <!-- ======== БЛОК FIREBASE ======== -->
+    
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
@@ -106,7 +132,7 @@
         const db = firebase.firestore();
         const storage = firebase.storage();
 
-        // Елементи профілю
+        // (Отримуємо всі елементи ... код не змінився)
         const emailDisplay = document.getElementById('email-display');
         const nameInput = document.getElementById('name');
         const cityInput = document.getElementById('city');
@@ -119,13 +145,9 @@
         const photoUploadInput = document.getElementById('photo-upload-input');
         const savePicButton = document.getElementById('save-pic-button');
         const generalStatusDiv = document.getElementById('general-status');
-
-        // Елементи панелі продавця
         const sellerPanel = document.getElementById('seller-panel');
         const addProductForm = document.getElementById('add-product-form');
         const addProductButton = document.getElementById('add-product-button');
-        
-        // Елементи для вкладок
         const tabButtons = document.querySelectorAll('.tab-button');
         const tabContents = document.querySelectorAll('.tab-content');
         const sellerTabButton = document.getElementById('seller-tab-button');
@@ -145,6 +167,7 @@
 
         // ГОЛОВНА ФУНКЦІЯ (АВТЕНТИФІКАЦІЯ)
         auth.onAuthStateChanged((user) => {
+            // ... (Код не змінився)
             if (user) {
                 currentUser = user;
                 loadUserProfile(user.uid, user.email);
@@ -159,6 +182,7 @@
 
         // 1. ЗАВАНТАЖЕННЯ ДАНИХ
         async function loadUserProfile(uid, email) {
+            // ... (Код не змінився)
             emailDisplay.value = email;
             const userDocRef = db.collection('users').doc(uid);
             const doc = await userDocRef.get();
@@ -186,7 +210,7 @@
 
         // 2. ЗБЕРЕЖЕННЯ ДАНИХ ПРОФІЛЮ
         profileForm.addEventListener('submit', async (e) => {
-            // (Цей код не змінився)
+            // ... (Код не змінився)
             e.preventDefault();
             if (!currentUser || !currentUser.emailVerified) {
                  showStatus(generalStatusDiv, "Для збереження даних профілю спочатку підтвердіть свою пошту.", 'error');
@@ -206,9 +230,9 @@
         });
 
         // 3. ЛОГІКА ЗАВАНТАЖЕННЯ ФОТО
+        // ... (Код не змінився)
         uploadPicButton.addEventListener('click', () => photoUploadInput.click());
         photoUploadInput.addEventListener('change', (e) => {
-            // (Цей код не змінився)
             selectedFile = e.target.files[0];
             if (selectedFile) {
                 const reader = new FileReader();
@@ -222,7 +246,6 @@
             }
         });
         savePicButton.addEventListener('click', async () => {
-             // (Цей код не змінився)
              if (!currentUser || !selectedFile || !currentUser.emailVerified) {
                 showStatus(generalStatusDiv, "Для завантаження фото спочатку підтвердіть свою пошту.", 'error');
                 return;
@@ -241,8 +264,10 @@
              }
         });
 
+
         // 4. ВИХІД
         logoutButton.addEventListener('click', () => {
+            // ... (Код не змінився)
             auth.signOut().then(() => {
                 window.location.href = 'index.html';
             }).catch((error) => console.error("Помилка виходу: ", error));
@@ -259,11 +284,13 @@
                 // Отримуємо дані з форми
                 const productName = document.getElementById('product-name').value;
                 const productDesc = document.getElementById('product-desc').value;
+                const productStory = document.getElementById('product-story').value; // <-- НОВЕ ПОЛЕ
+                const productCategory = document.getElementById('product-category').value;
                 const productPrice = Number(document.getElementById('product-price').value);
                 const imageFile = document.getElementById('product-image-file').files[0];
 
-                if (!productName || !productDesc || !productPrice || !imageFile) {
-                    showStatus(generalStatusDiv, "Будь ласка, заповніть всі поля та додайте фото товару", 'error');
+                if (!productName || !productDesc || !productPrice || !imageFile || !productCategory) {
+                    showStatus(generalStatusDiv, "Будь ласка, заповніть всі обов'язкові поля", 'error');
                     return;
                 }
 
@@ -271,27 +298,21 @@
                 addProductButton.disabled = true;
                 
                 try {
-                    // 1. Створюємо унікальний ID для товару
                     const productDocRef = db.collection('products').doc();
-                    
-                    // 2. Створюємо посилання на Storage
-                    // Назва файлу буде: product_images/ID_продавця/ID_товару.jpg
                     const storageRef = storage.ref(`product_images/${currentUser.uid}/${productDocRef.id}`);
-                    
-                    // 3. Завантажуємо файл
                     const task = await storageRef.put(imageFile);
-                    
-                    // 4. Отримуємо URL завантаженого файлу
                     const downloadURL = await task.ref.getDownloadURL();
                     
-                    // 5. Зберігаємо ВСЕ у Firestore
+                    // Зберігаємо ВСЕ у Firestore
                     await productDocRef.set({
                         name: productName,
                         description: productDesc,
+                        story: productStory, // <-- ЗБЕРІГАЄМО ІСТОРІЮ
+                        category: productCategory,
                         price: productPrice,
-                        imageUrl: downloadURL, // Зберігаємо URL зі Storage
+                        imageUrl: downloadURL, 
                         sellerId: currentUser.uid,
-                        status: "pending" // <- СТАТУС ДЛЯ АДМІНА
+                        status: "pending" 
                     });
                     
                     showStatus(generalStatusDiv, "Товар успішно додано! Він з'явиться в магазині після перевірки.", 'success');
@@ -309,6 +330,7 @@
         
         // 6. ЛОГІКА ДЛЯ ВКЛАДОК
         tabButtons.forEach(button => {
+            // ... (Код не змінився)
             button.addEventListener('click', () => {
                 tabButtons.forEach(btn => btn.classList.remove('active'));
                 button.classList.add('active');
