@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Корзина - SoulCraft</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Lato:wght@300;400&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="index.html" class="logo-nav">SoulCraft</a>
+            <div class="nav-links">
+                <a href="shop.html" class="button">Магазин</a>
+                <a href="cart.html" class="button" id="cart-link">Корзина</a>
+                <a href="login.html" class="button" id="login-link">Вхід</a>
+                <a href="register.html" class="button button-primary" id="register-link">Реєстрація</a>
+                <a href="dashboard.html" class="button button-primary" id="dashboard-link" style="display: none;">Мій Кабінет</a>
+                <button id="logout-link" class="button" style="display: none;">Вийти</button>
+            </div>
+        </nav>
+    </header>
+
+    <main class="content-section">
+        <h2>Ваша Корзина</h2>
+        
+        <div id="cart-items-container">
+            <p id="cart-loading">Завантаження корзини...</p>
+        </div>
+        
+        <div id="cart-summary" class="cart-total-summary" style="display: none;">
+            <span id="cart-total-price">Загальна сума: 0 грн</span>
+            <button class="button button-primary">Оформити замовлення</button>
+        </div>
+        
+    </main>
+
+    <footer>
+        <p>&copy; 2025 SoulCraft. Усі права захищені.</p>
+    </footer>
+
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+
+    <script>
+        // ВАШІ КЛЮЧІ
+        const firebaseConfig = {
+          apiKey: "AIzaSyDI1y9z3JqGwjOYacWsHZgPhU038YBz9pA",
+          authDomain: "soulcraft-project.firebaseapp.com",
+          projectId: "soulcraft-project",
+          storageBucket: "soulcraft-project.firebasestorage.app",
+          messagingSenderId: "442181022403",
+          appId: "1:442181022403:web:590c4523ebcc12213c2876"
+        };
+
+        // Ініціалізуємо Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // --- ЛОГІКА ДЛЯ КНОПОК НАВІГАЦІЇ ---
+        const loginLink = document.getElementById('login-link');
+        const registerLink = document.getElementById('register-link');
+        const dashboardLink = document.getElementById('dashboard-link');
+        const logoutLink = document.getElementById('logout-link');
+
+        auth.onAuthStateChanged((user) => {
+            if (user && user.emailVerified) {
+                loginLink.style.display = 'none';
+                registerLink.style.display = 'none';
+                dashboardLink.style.display = 'inline-block';
+                logoutLink.style.display = 'inline-block';
+            } else {
+                loginLink.style.display = 'inline-block';
+                registerLink.style.display = 'inline-block';
+                dashboardLink.style.display = 'none';
+                logoutLink.style.display = 'none';
+            }
+        });
+        
+        if (logoutLink) {
+            logoutLink.addEventListener('click', () => {
+                auth.signOut().then(() => {
+                    window.location.href = 'index.html';
+                }).catch((error) => console.error("Помилка виходу: ", error));
+            });
+        }
+        
+        // 
+        // --- ЛОГІКА ЗАВАНТАЖЕННЯ КОРЗИНИ ---
+        //
+        
+        const container = document.getElementById('cart-items-container');
+        const loading = document.getElementById('cart-loading');
+        const summary = document.getElementById('cart-summary');
+        const totalPriceEl = document.getElementById('cart-total-price');
+        
+        let totalPrice = 0;
+
+        // 1. Функція, що отримує ID з localStorage
+        function getCartProductIds() {
+            return JSON.parse(localStorage.getItem('soulcraftCart')) || [];
+        }
+
+        // 2. Функція для видалення товару
+        function removeFromCart(productId) {
+            let cart = getCartProductIds();
+            const newCart = cart.filter(id => id !== productId); // Створюємо новий масив без цього ID
+            localStorage.setItem('soulcraftCart', JSON.stringify(newCart));
+            
+            alert('Товар видалено з корзини.');
+            window.location.reload(); // Перезавантажуємо сторінку, щоб оновити список
+        }
+
+        // 3. Основна функція завантаження
+        async function loadCartItems() {
+            const productIds = getCartProductIds();
+
+            if (productIds.length === 0) {
+                loading.textContent = 'Ваша корзина порожня.';
+                return;
+            }
+
+            // Очищуємо контейнер
+            container.innerHTML = '';
+            
+            for (const id of productIds) {
+                try {
+                    const productDocRef = db.collection('products').doc(id);
+                    const doc = await productDocRef.get();
+
+                    if (doc.exists) {
+                        const product = doc.data();
+                        totalPrice += product.price; // Додаємо до загальної суми
+
+                        // Створюємо HTML для товару
+                        const itemRow = document.createElement('div');
+                        itemRow.className = 'cart-item-row';
+                        itemRow.innerHTML = `
+                            <img src="${product.imageUrl}" alt="${product.name}" class="cart-item-image">
+                            <div class="cart-item-info">
+                                <h3>${product.name}</h3>
+                                <span class="product-price">${product.price} грн</span>
+                            </div>
+                            <button class="button remove-from-cart-btn" data-id="${id}">Видалити</button>
+                        `;
+                        container.appendChild(itemRow);
+                    }
+                } catch (error) {
+                    console.error("Помилка завантаження товару " + id, error);
+                    container.innerHTML += `<p>Помилка завантаження товару ${id}</p>`;
+                }
+            }
+            
+            // Ховаємо завантаження
+            loading.style.display = 'none';
+            
+            // Показуємо загальну суму
+            totalPriceEl.textContent = `Загальна сума: ${totalPrice} грн`;
+            summary.style.display = 'flex';
+
+            // Навішуємо обробники на кнопки "Видалити"
+            document.querySelectorAll('.remove-from-cart-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const idToRemove = e.target.getAttribute('data-id');
+                    removeFromCart(idToRemove);
+                });
+            });
+        }
+        
+        loadCartItems();
+
+    </script>
+</body>
+</html>
