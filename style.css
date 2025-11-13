@@ -414,19 +414,26 @@ footer {
     display: none; 
 }
 
+/* --- ВИПРАВЛЕНО: ГАРАНТОВАНЕ ЦЕНТРУВАННЯ ---
+  Ми використовуємо 'display: flex' на самому
+  placeholder, щоб відцентрувати SVG всередині.
+  Додано !important для надійності.
+*/
 .profile-pic-placeholder {
     width: 200px;
     height: 200px;
     border-radius: 50%;
     background-color: #101010;
     border: 4px dashed var(--color-secondary);
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    
+    /* "Силові" стилі для центрування: */
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
 }
 .profile-pic-placeholder svg {
-    width: 80px !important; 
-    height: 80px !important;
+    width: 80px; 
+    height: 80px;
     color: var(--color-secondary);
 }
 
@@ -646,7 +653,6 @@ footer {
 
 /* ---------------------------------- */
 /* 10. СТИЛІ ДЛЯ ЗАВАНТАЖЕННЯ ФАЙЛІВ (dashboard.html) */
-/* (НОВІ СТИЛІ) */
 /* ---------------------------------- */
 
 .file-input {
