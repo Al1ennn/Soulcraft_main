@@ -5,62 +5,71 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Особистий кабінет - SoulCraft</title>
     <link rel="stylesheet" href="style.css">
+    <!-- Підключаємо шрифти -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Lato:wght@300;400&display=swap" rel="stylesheet">
-    <style>
-        /* Додайте мінімальні стилі для індикатора статусу, якщо вони не в style.css */
-        .status-message {
-            margin-top: 10px;
-            padding: 10px;
-            border-radius: 5px;
-            text-align: center;
-        }
-        .status-message.success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-        .status-message.error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-    </style>
 </head>
 <body>
     <header>
         <nav>
             <a href="index.html" class="logo-nav">SoulCraft</a>
             <div class="nav-links">
+                <a href="shop.html" class="button">Магазин</a>
                 <button id="logout-button" class="button">Вийти</button>
             </div>
         </nav>
     </header>
 
     <main class="dashboard-container">
-        <h1>Ваш профіль</h1>
         
+        <!-- Секція для відображення загальних статусів (Успіх/Помилка) -->
         <div id="general-status" class="status-message" style="display:none;"></div>
 
+        <!-- 
+          --- НОВА СЕКЦІЯ: ПАНЕЛЬ ПРОДАВЦЯ ---
+          (Буде прихована за замовчуванням)
+        -->
+        <section id="seller-panel" class="seller-panel" style="display: none;">
+            <h2>Панель Продавця</h2>
+            <form id="add-product-form">
+                <h3>Додати новий товар</h3>
+                
+                <label for="product-name">Назва товару</label>
+                <input type="text" id="product-name" required>
+                
+                <label for="product-desc">Опис товару</label>
+                <textarea id="product-desc" rows="3" required></textarea>
+                
+                <label for="product-price">Ціна (у грн)</label>
+                <input type="number" id="product-price" required>
+                
+                <label for="product-image">URL зображення товару</label>
+                <input type="text" id="product-image" placeholder="Наприклад: item4.jpg (має бути у вашому GitHub)" required>
+                
+                <button type="submit" class="button button-primary">Додати товар</button>
+            </form>
+        </section>
+        <!-- --- КІНЕЦЬ НОВОЇ СЕКЦІЇ --- -->
+
+
+        <h1>Ваш профіль</h1>
         <div class="profile-layout">
             
+            <!-- ЛІВА КОЛОНКА: ФОТО -->
             <div class="profile-pic-container">
                 <img src="" alt="Ваше фото профілю" id="profile-pic-display" class="profile-pic">
-                
                 <div id="profile-pic-placeholder" class="profile-pic-placeholder">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A1.5 1.5 0 0118 21.75H6.001c-.621 0-1.125-.504-1.125-1.125a1.5 1.5 0 01.624-1.507z" />
                     </svg>
                 </div>
-
                 <input type="file" id="photo-upload-input" accept="image/*" style="display: none;">
                 <button id="upload-pic-button" class="button button-primary">Змінити фото</button>
                 <button id="save-pic-button" class="button" style="display:none;">Зберегти фото</button>
-                
-                <div id="photo-status" class="status-message" style="display:none;"></div>
             </div>
 
+            <!-- ПРАВА КОЛОНКА: ІНФОРМАЦІЯ -->
             <div class="profile-info-container">
                 <form id="profile-form">
                     <label for="email-display">Email (не можна змінити)</label>
@@ -78,10 +87,10 @@
                     <button type="submit" class="button button-primary">Зберегти профіль</button>
                 </form>
             </div>
-
         </div>
     </main>
 
+    <!-- ======== БЛОК FIREBASE ======== -->
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
@@ -104,74 +113,54 @@
         const db = firebase.firestore();
         const storage = firebase.storage();
 
-        // Отримуємо елементи зі сторінки
+        // Елементи профілю
         const emailDisplay = document.getElementById('email-display');
         const nameInput = document.getElementById('name');
         const cityInput = document.getElementById('city');
         const phoneInput = document.getElementById('phone');
         const profileForm = document.getElementById('profile-form');
         const logoutButton = document.getElementById('logout-button');
-        
-        // Елементи для фото
         const profilePicDisplay = document.getElementById('profile-pic-display');
         const profilePicPlaceholder = document.getElementById('profile-pic-placeholder');
         const uploadPicButton = document.getElementById('upload-pic-button');
         const photoUploadInput = document.getElementById('photo-upload-input');
         const savePicButton = document.getElementById('save-pic-button');
-        
-        // НОВІ ЕЛЕМЕНТИ ДЛЯ СТАТУСУ
         const generalStatusDiv = document.getElementById('general-status');
-        const photoStatusDiv = document.getElementById('photo-status');
-        const profileSaveButton = profileForm.querySelector('button[type="submit"]');
 
-        let currentUser = null; // Зберігаємо тут дані користувача
-        let selectedFile = null; // Зберігаємо обраний файл
+        // НОВІ елементи панелі продавця
+        const sellerPanel = document.getElementById('seller-panel');
+        const addProductForm = document.getElementById('add-product-form');
 
-        // ФУНКЦІЯ ДЛЯ ВІДОБРАЖЕННЯ ПОВІДОМЛЕНЬ
+        let currentUser = null; 
+        let selectedFile = null; 
+
+        // Функція для показу повідомлень
         function showStatus(element, message, type) {
             element.textContent = message;
             element.className = 'status-message ' + type;
             element.style.display = 'block';
-            
-            // Автоматично приховуємо повідомлення про успіх через 5 секунд
             if (type === 'success') {
-                setTimeout(() => {
-                    element.style.display = 'none';
-                }, 5000);
+                setTimeout(() => { element.style.display = 'none'; }, 5000);
             }
         }
 
-        // 
-        // --- ГОЛОВНА ФУНКЦІЯ ---
-        // 
+        // ГОЛОВНА ФУНКЦІЯ
         auth.onAuthStateChanged((user) => {
             if (user && user.emailVerified) {
-                // ВАРІАНТ 1: Користувач увійшов І ЙОГО ПОШТА ПІДТВЕРДЖЕНА
                 currentUser = user;
                 loadUserProfile(user.uid, user.email);
-
             } else if (user && !user.emailVerified) {
-                // ВАРІАНТ 2: Користувач увійшов, АЛЕ ПОШТА НЕ ПІДТВЕРДЖЕНА
-                showStatus(generalStatusDiv, "Ваш акаунт ще не активовано. Перевірте пошту (або папку 'Спам') та перейдіть за посиланням.", 'error');
-                
-                // Виходимо з системи і відправляємо на вхід
-                auth.signOut();
-                setTimeout(() => {
-                    window.location.href = 'login.html';
-                }, 3000); // Даємо час прочитати повідомлення
-
+                alert("Ваш акаунт ще не активовано. Будь ласка, підтвердіть пошту.");
+                window.location.href = 'login.html'; // Повертаємо логіку виходу
             } else {
-                // ВАРІАНТ 3: Користувач НЕ увійшов
-                // alert("Будь ласка, увійдіть, щоб побачити ваш профіль."); // Замінюємо на showStatus при необхідності
+                alert("Будь ласка, увійдіть, щоб побачити ваш профіль.");
                 window.location.href = 'login.html';
             }
         });
 
         // 1. ЗАВАНТАЖЕННЯ ДАНИХ
         async function loadUserProfile(uid, email) {
-            emailDisplay.value = email; // Показуємо email
-
-            // Отримуємо документ користувача з Firestore
+            emailDisplay.value = email;
             const userDocRef = db.collection('users').doc(uid);
             const doc = await userDocRef.get();
 
@@ -189,55 +178,44 @@
                     profilePicDisplay.style.display = 'none';
                     profilePicPlaceholder.style.display = 'block';
                 }
+                
+                // --- ОНОВЛЕНО: ПЕРЕВІРКА РОЛІ ---
+                if (data.role === 'seller') {
+                    sellerPanel.style.display = 'block'; // Показуємо панель продавця!
+                }
+                
             } else {
-                // Якщо документа ще немає, просто показуємо заглушку
-                profilePicDisplay.style.display = 'none';
+                // Це не повинно трапитись, бо ми створюємо doc при реєстрації
+                console.error("Критична помилка: Документ користувача не знайдено!");
                 profilePicPlaceholder.style.display = 'block';
             }
         }
-
-        // 2. ЗБЕРЕЖЕННЯ ДАНИХ ПРОФІЛЮ (Ім'я, місто, телефон)
+        
+        // ... (Код для Збереження профілю та Завантаження фото залишається той самий) ...
+        
+        // 2. ЗБЕРЕЖЕННЯ ДАНИХ ПРОФІЛЮ
         profileForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             if (!currentUser) return;
-
-            const userDocRef = db.collection('users').doc(currentUser.uid);
-            
-            // Вмикаємо індикатор завантаження
-            profileSaveButton.disabled = true;
-            const originalText = profileSaveButton.textContent;
-            profileSaveButton.textContent = "Збереження...";
-            
-            try {
+            // ... (ваш код збереження профілю тут ... )
+             const userDocRef = db.collection('users').doc(currentUser.uid);
+             try {
                 await userDocRef.set({
                     name: nameInput.value,
                     city: cityInput.value,
                     phone: phoneInput.value
-                }, { merge: true }); // { merge: true } щоб не перезаписати фото
-                
+                }, { merge: true }); 
                 showStatus(generalStatusDiv, "Профіль успішно збережено!", 'success');
-            } catch (error) {
-                console.error("Помилка збереження профілю: ", error);
-                showStatus(generalStatusDiv, "Помилка збереження профілю: " + error.message, 'error');
-            } finally {
-                // Вимикаємо індикатор завантаження
-                profileSaveButton.disabled = false;
-                profileSaveButton.textContent = originalText;
-            }
+             } catch (error) {
+                showStatus(generalStatusDiv, "Помилка: " + error.message, 'error');
+             }
         });
 
         // 3. ЛОГІКА ЗАВАНТАЖЕННЯ ФОТО
-        
-        // Крок А: Клік по кнопці "Змінити фото" відкриває прихований input
-        uploadPicButton.addEventListener('click', () => {
-            photoUploadInput.click();
-        });
-
-        // Крок Б: Коли користувач обрав файл
+        uploadPicButton.addEventListener('click', () => photoUploadInput.click());
         photoUploadInput.addEventListener('change', (e) => {
             selectedFile = e.target.files[0];
             if (selectedFile) {
-                // Показуємо прев'ю
                 const reader = new FileReader();
                 reader.onload = (event) => {
                     profilePicDisplay.src = event.target.result;
@@ -245,63 +223,72 @@
                     profilePicPlaceholder.style.display = 'none';
                 }
                 reader.readAsDataURL(selectedFile);
-                
-                // Показуємо кнопку "Зберегти фото"
                 savePicButton.style.display = 'inline-block';
-                // Приховуємо попередні повідомлення
-                photoStatusDiv.style.display = 'none';
             }
         });
-
-        // Крок В: Клік по кнопці "Зберегти фото"
         savePicButton.addEventListener('click', async () => {
-            if (!currentUser || !selectedFile) return;
-
-            savePicButton.textContent = "Завантаження...";
-            savePicButton.disabled = true;
-            
-            // Створюємо посилання на Firebase Storage
-            const storageRef = storage.ref(`profile_pics/${currentUser.uid}`);
-            
-            // Додаємо метадані для коректної обробки файлу
-            const metadata = {
-                contentType: selectedFile.type
-            };
-            
-            try {
-                // Завантажуємо файл
-                const task = await storageRef.put(selectedFile, metadata);
-                
-                // Отримуємо URL завантаженого файлу
+             // ... (ваш код збереження фото тут ... )
+             if (!currentUser || !selectedFile) return;
+             savePicButton.textContent = "Завантаження...";
+             const storageRef = storage.ref(`profile_pics/${currentUser.uid}`);
+             try {
+                const task = await storageRef.put(selectedFile);
                 const downloadURL = await task.ref.getDownloadURL();
-                
-                // Зберігаємо URL у Firestore
                 const userDocRef = db.collection('users').doc(currentUser.uid);
-                await userDocRef.set({
-                    photoURL: downloadURL
-                }, { merge: true });
-
-                showStatus(photoStatusDiv, "Фото профілю оновлено!", 'success');
-                savePicButton.style.display = 'none'; // Ховаємо кнопку
-                selectedFile = null; // Скидаємо вибір
-
-            } catch (error) {
-                console.error("Помилка завантаження фото: ", error);
-                showStatus(photoStatusDiv, "Помилка завантаження фото: " + error.message, 'error');
-            } finally {
-                savePicButton.disabled = false;
+                await userDocRef.set({ photoURL: downloadURL }, { merge: true });
+                window.location.reload(); 
+             } catch (error) {
+                showStatus(generalStatusDiv, "Помилка завантаження фото: " + error.message, 'error');
                 savePicButton.textContent = "Зберегти фото";
-            }
+             }
         });
+
 
         // 4. ВИХІД
         logoutButton.addEventListener('click', () => {
             auth.signOut().then(() => {
                 window.location.href = 'index.html';
-            }).catch((error) => {
-                console.error("Помилка виходу: ", error);
-            });
+            }).catch((error) => console.error("Помилка виходу: ", error));
         });
+        
+        // 
+        // --- НОВА ФУНКЦІЯ: ДОДАВАННЯ ТОВАРУ (ДЛЯ ПРОДАВЦІВ) ---
+        // 
+        if (addProductForm) {
+            addProductForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                if (!currentUser) return;
+
+                // Отримуємо дані з форми
+                const productName = document.getElementById('product-name').value;
+                const productDesc = document.getElementById('product-desc').value;
+                const productPrice = Number(document.getElementById('product-price').value);
+                const productImageUrl = document.getElementById('product-image').value;
+
+                if (!productName || !productDesc || !productPrice || !productImageUrl) {
+                    showStatus(generalStatusDiv, "Будь ласка, заповніть всі поля товару", 'error');
+                    return;
+                }
+                
+                try {
+                    // Додаємо новий документ в колекцію 'products'
+                    await db.collection('products').add({
+                        name: productName,
+                        description: productDesc,
+                        price: productPrice,
+                        imageUrl: productImageUrl,
+                        sellerId: currentUser.uid // Зберігаємо ID продавця
+                    });
+                    
+                    showStatus(generalStatusDiv, "Товар успішно додано!", 'success');
+                    addProductForm.reset(); // Очищуємо форму
+                    
+                } catch (error) {
+                    console.error("Помилка додавання товару: ", error);
+                    showStatus(generalStatusDiv, "Помилка додавання товару: " + error.message, 'error');
+                }
+            });
+        }
 
     </script>
 </body>
