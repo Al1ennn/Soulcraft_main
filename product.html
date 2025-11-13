@@ -3,10 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Назва буде змінена через JS -->
     <title>Завантаження... - SoulCraft</title>
     <link rel="stylesheet" href="style.css">
-    <!-- Підключаємо шрифти -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Lato:wght@300;400&display=swap" rel="stylesheet">
@@ -17,6 +15,8 @@
             <a href="index.html" class="logo-nav">SoulCraft</a>
             <div class="nav-links">
                 <a href="shop.html" class="button">Магазин</a>
+                <a href="cart.html" class="button" id="cart-link">Корзина</a>
+                
                 <a href="login.html" class="button" id="login-link">Вхід</a>
                 <a href="register.html" class="button button-primary" id="register-link">Реєстрація</a>
                 <a href="dashboard.html" class="button button-primary" id="dashboard-link" style="display: none;">Мій Кабінет</a>
@@ -25,46 +25,33 @@
         </nav>
     </header>
 
-    <!-- 
-      --- ОСНОВНИЙ КОНТЕНТ СТОРІНКИ ТОВАРУ (ОНОВЛЕНО) ---
-    -->
     <main class="product-page-container">
         
-        <!-- Індикатор завантаження -->
         <p id="product-loading">Завантаження товару...</p>
 
-        <!-- Цей блок з'явиться, коли дані завантажаться -->
         <div id="product-content" class="product-detail-layout" style="display: none;">
             
-            <!-- Ліва колонка: Фото -->
             <div class="product-image-container">
                 <img id="product-image" src="" alt="Фото товару">
             </div>
 
-            <!-- Права колонка: Інфо -->
             <div class="product-info-container">
                 <h1 id="product-name">Назва товару</h1>
-                
                 <span class="product-price-large" id="product-price">... грн</span>
                 
                 <h3>Опис</h3>
                 <p id="product-description">...</p>
                 
-                <!-- 
-                  --- НОВИЙ БЛОК: ІСТОРІЯ ПРЕДМЕТУ ---
-                -->
                 <div id="product-story-container" style="display: none;">
                     <h3>Історія Витвору</h3>
                     <p id="product-story" class="product-story-text"></p>
                 </div>
                 
-                <!-- Інформація про продавця -->
                 <h3>Продавець</h3>
                 <div id="seller-info" class="seller-info-box">
                     Завантаження даних про продавця...
                 </div>
                 
-                <!-- Кнопка "Купити" -->
                 <button id="add-to-cart-button" class="button button-primary">Додати в корзину</button>
             </div>
         </div>
@@ -74,8 +61,6 @@
         <p>&copy; 2025 SoulCraft. Усі права захищені.</p>
     </footer>
 
-    <!-- ======== БЛОК FIREBASE ======== -->
-    
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
@@ -91,13 +76,11 @@
           appId: "1:442181022403:web:590c4523ebcc12213c2876"
         };
 
-        // Ініціалізуємо Firebase
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
 
         // --- ЛОГІКА ДЛЯ КНОПОК НАВІГАЦІЇ ---
-        // ... (Код не змінився)
         const loginLink = document.getElementById('login-link');
         const registerLink = document.getElementById('register-link');
         const dashboardLink = document.getElementById('dashboard-link');
@@ -126,54 +109,40 @@
         }
         
         // 
-        // --- ОНОВЛЕНО: ЛОГІКА ЗАВАНТАЖЕННЯ СТОРІНКИ ТОВАРУ ---
+        // --- ЛОГІКА ЗАВАНТАЖЕННЯ СТОРІНКИ ТОВАРУ ---
         //
-        
         const loadingIndicator = document.getElementById('product-loading');
         const productContent = document.getElementById('product-content');
-
-        // 1. Отримуємо ID товару з URL
         const urlParams = new URLSearchParams(window.location.search);
         const productId = urlParams.get('id');
 
-        // 2. Функція для завантаження даних
         async function loadProductDetails(id) {
+            // ... (Код завантаження товару та продавця не змінився)
             if (!id) {
                 loadingIndicator.textContent = 'Помилка: ID товару не знайдено.';
                 return;
             }
-
             try {
-                // --- ЗАПИТ 1: Отримуємо сам товар ---
                 const productDocRef = db.collection('products').doc(id);
                 const productDoc = await productDocRef.get();
-
                 if (!productDoc.exists) {
                     loadingIndicator.textContent = 'Помилка: Товар не знайдено.';
                     return;
                 }
-                
                 const product = productDoc.data();
-
-                // Заповнюємо HTML даними товару
                 document.title = `${product.name} - SoulCraft`;
                 document.getElementById('product-image').src = product.imageUrl;
                 document.getElementById('product-name').textContent = product.name;
                 document.getElementById('product-price').textContent = `${product.price} грн`;
                 document.getElementById('product-description').textContent = product.description;
-
-                // --- ОНОВЛЕНО: Завантажуємо Історію ---
                 if (product.story && product.story.trim() !== '') {
                     document.getElementById('product-story').textContent = product.story;
                     document.getElementById('product-story-container').style.display = 'block';
                 }
-
-                // --- ЗАПИТ 2: Отримуємо дані продавця ---
                 const sellerId = product.sellerId;
                 if (sellerId) {
                     const sellerDocRef = db.collection('users').doc(sellerId);
                     const sellerDoc = await sellerDocRef.get();
-                    
                     if (sellerDoc.exists) {
                         const seller = sellerDoc.data();
                         document.getElementById('seller-info').innerHTML = `
@@ -186,25 +155,42 @@
                 } else {
                      document.getElementById('seller-info').textContent = 'Дані про продавця відсутні.';
                 }
-                
-                // Показуємо контент
                 loadingIndicator.style.display = 'none';
                 productContent.style.display = 'flex';
-
             } catch (error) {
                 console.error("Помилка завантаження товару:", error);
                 loadingIndicator.textContent = 'Не вдалося завантажити товар.';
             }
         }
         
-        // 3. Запускаємо завантаження
         loadProductDetails(productId);
         
-        // 4. Логіка кнопки "Додати в корзину" (Поки що просто 'alert')
+        // 
+        // --- ОНОВЛЕНО: ЛОГІКА КНОПКИ "ДОДАТИ В КОРЗИНУ" ---
+        // 
         const addToCartButton = document.getElementById('add-to-cart-button');
         addToCartButton.addEventListener('click', () => {
-            alert('Товар додано в корзину! (Логіка корзини буде реалізована наступним кроком)');
-            // Тут ми будемо додавати 'productId' у LocalStorage
+            if (!productId) return; // Переконуємось, що ID товару є
+            
+            // 1. Отримуємо поточну корзину з localStorage
+            // (або створюємо порожній масив, якщо її немає)
+            let cart = JSON.parse(localStorage.getItem('soulcraftCart')) || [];
+
+            // 2. Перевіряємо, чи цей товар ВЖЕ є в корзині
+            if (cart.includes(productId)) {
+                alert('Цей товар вже у вашій корзині!');
+                return; // Не додаємо його знову
+            }
+
+            // 3. Додаємо ID товару в масив
+            cart.push(productId);
+
+            // 4. Зберігаємо оновлений масив назад у localStorage
+            localStorage.setItem('soulcraftCart', JSON.stringify(cart));
+
+            alert('Товар додано в корзину!');
+            
+            // (Пізніше ми додамо оновлення іконки корзини тут)
         });
 
     </script>
