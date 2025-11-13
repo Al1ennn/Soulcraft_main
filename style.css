@@ -873,3 +873,67 @@ select:focus {
     height: 100px; /* Висота поля */
     resize: vertical; /* Дозволяємо тягнути */
 }
+/* ---------------------------------- */
+/* 14. СТИЛІ ДЛЯ КОРЗИНИ (cart.html) */
+/* ---------------------------------- */
+
+.cart-item-row {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background-color: #101010;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #2a2a2a;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+
+.cart-item-image {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 5px;
+    border: 1px solid #3a3a3a;
+}
+
+.cart-item-info {
+    flex: 1; /* Займає весь доступний простір */
+    min-width: 200px;
+}
+
+.cart-item-info h3 {
+    margin: 0 0 5px 0;
+    font-size: 20px;
+}
+
+.remove-from-cart-btn {
+    background-color: transparent;
+    border-color: #F44336; /* Червоний */
+    color: #F44336;
+    padding: 8px 15px;
+    font-size: 14px;
+    margin-left: auto; /* Притискає кнопку вправо */
+}
+.remove-from-cart-btn:hover {
+    background-color: #F44336;
+    color: var(--color-bg);
+}
+
+/* Загальна сума */
+.cart-total-summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 2px solid #2a2a2a;
+}
+
+#cart-total-price {
+    font-size: 24px;
+    font-weight: bold;
+    color: var(--color-primary);
+    font-family: var(--font-title);
+}
