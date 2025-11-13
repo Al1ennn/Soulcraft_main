@@ -44,7 +44,6 @@
                     <button id="upload-pic-button" class="button button-primary">Змінити фото</button>
                     <button id="save-pic-button" class="button" style="display:none;">Зберегти фото</button>
                 </div>
-
                 <div class="profile-info-container">
                     <form id="profile-form">
                         <label for="email-display">Email (не можна змінити)</label>
@@ -68,13 +67,17 @@
                     <h3>Додати новий товар</h3>
                     <label for="product-name">Назва товару</label>
                     <input type="text" id="product-name" required>
+                    
                     <label for="product-desc">Опис товару</label>
                     <textarea id="product-desc" rows="3" required></textarea>
+                    
                     <label for="product-price">Ціна (у грн)</label>
                     <input type="number" id="product-price" required>
-                    <label for="product-image">URL зображення товару</label>
-                    <input type="text" id="product-image" placeholder="Наприклад: item4.jpg (має бути у вашому GitHub)" required>
-                    <button type="submit" class="button button-primary">Додати товар</button>
+                    
+                    <label for="product-image-file">Фото товару</label>
+                    <input type="file" id="product-image-file" class="file-input" accept="image/png, image/jpeg" required>
+                    
+                    <button type="submit" class="button button-primary" id="add-product-button">Додати товар</button>
                 </form>
             </section>
         </div>
@@ -120,8 +123,9 @@
         // Елементи панелі продавця
         const sellerPanel = document.getElementById('seller-panel');
         const addProductForm = document.getElementById('add-product-form');
+        const addProductButton = document.getElementById('add-product-button');
         
-        // НОВІ Елементи для вкладок
+        // Елементи для вкладок
         const tabButtons = document.querySelectorAll('.tab-button');
         const tabContents = document.querySelectorAll('.tab-content');
         const sellerTabButton = document.getElementById('seller-tab-button');
@@ -139,18 +143,14 @@
             }
         }
 
-        // 
-        // --- ГОЛОВНА ФУНКЦІЯ (АВТЕНТИФІКАЦІЯ) ---
-        // 
+        // ГОЛОВНА ФУНКЦІЯ (АВТЕНТИФІКАЦІЯ)
         auth.onAuthStateChanged((user) => {
             if (user) {
                 currentUser = user;
                 loadUserProfile(user.uid, user.email);
-
                 if (!user.emailVerified) {
-                    alert("Ваш акаунт ще не активовано. До цього часу ви можете лише переглядати профіль. Будь ласка, підтвердіть пошту.");
+                    alert("Ваш акаунт ще не активовано. Будь ласка, підтвердіть пошту.");
                 }
-                
             } else {
                 alert("Будь ласка, увійдіть, щоб побачити ваш профіль.");
                 window.location.href = 'login.html';
@@ -162,13 +162,11 @@
             emailDisplay.value = email;
             const userDocRef = db.collection('users').doc(uid);
             const doc = await userDocRef.get();
-
             if (doc.exists) {
                 const data = doc.data();
                 nameInput.value = data.name || '';
                 cityInput.value = data.city || '';
                 phoneInput.value = data.phone || '';
-                
                 if (data.photoURL) {
                     profilePicDisplay.src = data.photoURL;
                     profilePicDisplay.style.display = 'block';
@@ -177,12 +175,9 @@
                     profilePicDisplay.style.display = 'none';
                     profilePicPlaceholder.style.display = 'block';
                 }
-                
-                // --- ОНОВЛЕНО: ПЕРЕВІРКА РОЛІ ---
                 if (data.role === 'seller') {
-                    sellerTabButton.style.display = 'inline-block'; // Показуємо вкладку "Панель Продавця"
+                    sellerTabButton.style.display = 'inline-block';
                 }
-                
             } else {
                 userDocRef.set({ name: '', city: '', phone: '' }); 
                 profilePicPlaceholder.style.display = 'block';
@@ -191,13 +186,12 @@
 
         // 2. ЗБЕРЕЖЕННЯ ДАНИХ ПРОФІЛЮ
         profileForm.addEventListener('submit', async (e) => {
+            // (Цей код не змінився)
             e.preventDefault();
-            if (!currentUser) return;
-            if (!currentUser.emailVerified) {
-                showStatus(generalStatusDiv, "Для збереження даних профілю спочатку підтвердіть свою пошту.", 'error');
+            if (!currentUser || !currentUser.emailVerified) {
+                 showStatus(generalStatusDiv, "Для збереження даних профілю спочатку підтвердіть свою пошту.", 'error');
                 return;
             }
-
             const userDocRef = db.collection('users').doc(currentUser.uid);
              try {
                 await userDocRef.set({
@@ -214,6 +208,7 @@
         // 3. ЛОГІКА ЗАВАНТАЖЕННЯ ФОТО
         uploadPicButton.addEventListener('click', () => photoUploadInput.click());
         photoUploadInput.addEventListener('change', (e) => {
+            // (Цей код не змінився)
             selectedFile = e.target.files[0];
             if (selectedFile) {
                 const reader = new FileReader();
@@ -227,8 +222,8 @@
             }
         });
         savePicButton.addEventListener('click', async () => {
-             if (!currentUser || !selectedFile) return;
-             if (!currentUser.emailVerified) {
+             // (Цей код не змінився)
+             if (!currentUser || !selectedFile || !currentUser.emailVerified) {
                 showStatus(generalStatusDiv, "Для завантаження фото спочатку підтвердіть свою пошту.", 'error');
                 return;
             }
@@ -253,54 +248,71 @@
             }).catch((error) => console.error("Помилка виходу: ", error));
         });
         
-        // 5. ЛОГІКА ДОДАВАННЯ ТОВАРУ
+        // 
+        // --- 5. ОНОВЛЕНО: ЛОГІКА ДОДАВАННЯ ТОВАРУ ---
+        // 
         if (addProductForm) {
             addProductForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 if (!currentUser) return;
 
+                // Отримуємо дані з форми
                 const productName = document.getElementById('product-name').value;
                 const productDesc = document.getElementById('product-desc').value;
                 const productPrice = Number(document.getElementById('product-price').value);
-                const productImageUrl = document.getElementById('product-image').value;
+                const imageFile = document.getElementById('product-image-file').files[0];
 
-                if (!productName || !productDesc || !productPrice || !productImageUrl) {
-                    showStatus(generalStatusDiv, "Будь ласка, заповніть всі поля товару", 'error');
+                if (!productName || !productDesc || !productPrice || !imageFile) {
+                    showStatus(generalStatusDiv, "Будь ласка, заповніть всі поля та додайте фото товару", 'error');
                     return;
                 }
+
+                addProductButton.textContent = "Завантаження...";
+                addProductButton.disabled = true;
                 
                 try {
-                    await db.collection('products').add({
+                    // 1. Створюємо унікальний ID для товару
+                    const productDocRef = db.collection('products').doc();
+                    
+                    // 2. Створюємо посилання на Storage
+                    // Назва файлу буде: product_images/ID_продавця/ID_товару.jpg
+                    const storageRef = storage.ref(`product_images/${currentUser.uid}/${productDocRef.id}`);
+                    
+                    // 3. Завантажуємо файл
+                    const task = await storageRef.put(imageFile);
+                    
+                    // 4. Отримуємо URL завантаженого файлу
+                    const downloadURL = await task.ref.getDownloadURL();
+                    
+                    // 5. Зберігаємо ВСЕ у Firestore
+                    await productDocRef.set({
                         name: productName,
                         description: productDesc,
                         price: productPrice,
-                        imageUrl: productImageUrl,
-                        sellerId: currentUser.uid 
+                        imageUrl: downloadURL, // Зберігаємо URL зі Storage
+                        sellerId: currentUser.uid,
+                        status: "pending" // <- СТАТУС ДЛЯ АДМІНА
                     });
                     
-                    showStatus(generalStatusDiv, "Товар успішно додано!", 'success');
+                    showStatus(generalStatusDiv, "Товар успішно додано! Він з'явиться в магазині після перевірки.", 'success');
                     addProductForm.reset();
                     
                 } catch (error) {
+                    console.error("Помилка додавання товару: ", error);
                     showStatus(generalStatusDiv, "Помилка додавання товару: " + error.message, 'error');
+                } finally {
+                    addProductButton.textContent = "Додати товар";
+                    addProductButton.disabled = false;
                 }
             });
         }
         
-        // 
-        // --- НОВА ЛОГІКА ДЛЯ ВКЛАДОК ---
-        // 
+        // 6. ЛОГІКА ДЛЯ ВКЛАДОК
         tabButtons.forEach(button => {
             button.addEventListener('click', () => {
-                // 1. Робимо всі кнопки неактивними
                 tabButtons.forEach(btn => btn.classList.remove('active'));
-                // 2. Робимо натиснуту кнопку активною
                 button.classList.add('active');
-                
-                // 3. Ховаємо весь контент
                 tabContents.forEach(content => content.classList.remove('active'));
-                
-                // 4. Показуємо контент, пов'язаний з кнопкою
                 const tabId = button.getAttribute('data-tab');
                 document.getElementById(tabId).classList.add('active');
             });
