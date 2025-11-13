@@ -1,5 +1,5 @@
 /* ---------------------------------- */
-/* ЗАГАЛЬНІ НАЛАШТУВАННЯ */
+/* 0. ЗАГАЛЬНІ НАЛАШТУВАННЯ (Root, Body) */
 /* ---------------------------------- */
 :root {
     /* Наша нова палітра кольорів */
@@ -40,8 +40,11 @@ img {
 }
 
 /* ---------------------------------- */
-/* HEADER (Навігація) */
+/* 1. ЗАГАЛЬНІ КОМПОНЕНТИ (Header, Footer, Buttons) */
+/* (Використовуються на ВСІХ сторінках) */
 /* ---------------------------------- */
+
+/* --- Header / Nav --- */
 header {
     background-color: rgba(18, 18, 18, 0.8); /* Напівпрозорий фон */
     backdrop-filter: blur(10px);
@@ -72,6 +75,7 @@ nav {
     letter-spacing: 1px;
 }
 
+/* --- Buttons --- */
 .button {
     display: inline-block;
     padding: 10px 20px;
@@ -85,6 +89,10 @@ nav {
     background-color: transparent;
     cursor: pointer;
     font-family: var(--font-body);
+}
+/* Виправлення відступу для першої кнопки */
+.nav-links .button:first-child {
+  margin-left: 0;
 }
 
 .button:hover {
@@ -102,9 +110,20 @@ nav {
     color: var(--color-primary);
 }
 
+/* --- Footer --- */
+footer {
+    text-align: center;
+    padding: 40px 20px;
+    margin-top: 40px;
+    border-top: 1px solid #2a2a2a;
+    color: var(--color-secondary);
+}
+
 /* ---------------------------------- */
-/* HERO SECTION (Головний екран) */
+/* 2. ГОЛОВНА СТОРІНКА (index.html) */
 /* ---------------------------------- */
+
+/* --- Hero Section --- */
 .hero-section {
     min-height: 100vh;
     display: flex;
@@ -124,7 +143,6 @@ nav {
     max-width: 250px;
     height: auto;
     margin-bottom: 10px;
-    /* Замість круга, робимо м'яку тінь, що світиться */
     filter: drop-shadow(0 0 25px rgba(224, 202, 154, 0.4));
     border-radius: 50%; /* Залишаємо круг, як у лого */
     border: 2px solid var(--color-primary);
@@ -146,7 +164,7 @@ nav {
     letter-spacing: 1px;
 }
 
-/* Анімація для стрілки "вниз" */
+/* --- Анімація стрілки вниз --- */
 .scroll-down {
     position: absolute;
     bottom: 30px;
@@ -166,17 +184,15 @@ nav {
     }
 }
 
-/* ---------------------------------- */
-/* ЗАГАЛЬНІ СЕКЦІЇ */
-/* ---------------------------------- */
-.content-section, .featured-section, .cta-section {
+/* --- Загальні секції (Про нас, CTA) --- */
+.content-section, .cta-section {
     padding: 80px 5%;
     max-width: 1200px;
     margin: 0 auto;
     text-align: center;
 }
 
-.content-section h2, .featured-section h2, .cta-section h2 {
+.content-section h2, .cta-section h2 {
     font-size: 42px;
     margin-bottom: 20px;
 }
@@ -188,9 +204,25 @@ nav {
     line-height: 1.7;
 }
 
-/* ---------------------------------- */
-/* FEATURED SECTION (Галерея) */
-/* ---------------------------------- */
+.cta-section {
+    background-color: var(--color-surface);
+    border-radius: 10px;
+    margin-top: 40px;
+}
+
+/* --- Галерея (index.html) --- */
+.featured-section {
+    padding: 80px 5%;
+    max-width: 1200px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.featured-section h2 {
+    font-size: 42px;
+    margin-bottom: 20px;
+}
+
 .gallery-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -236,25 +268,35 @@ nav {
 }
 
 /* ---------------------------------- */
-/* CTA та FOOTER */
+/* 3. СТОРІНКА МАГАЗИНУ (shop.html) */
 /* ---------------------------------- */
-.cta-section {
-    background-color: var(--color-surface);
-    border-radius: 10px;
-    margin-top: 40px;
-}
 
-footer {
-    text-align: center;
-    padding: 40px 20px;
-    margin-top: 40px;
+.product-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+    padding-top: 15px;
     border-top: 1px solid #2a2a2a;
-    color: var(--color-secondary);
 }
 
+.product-price {
+    font-size: 24px;
+    font-weight: bold;
+    color: var(--color-primary);
+    font-family: var(--font-title);
+}
+
+.buy-button {
+    /* Спеціальні стилі для кнопки "Купити" в картці */
+    padding: 8px 15px;
+    font-size: 14px;
+    margin-left: 0; /* Скидаємо відступ */
+}
+
+
 /* ---------------------------------- */
-/* СТИЛІ ДЛЯ ФОРМ (Вхід/Реєстрація) */
-/* (Вони теж оновлені під темний стиль) */
+/* 4. ФОРМИ (login.html / register.html) */
 /* ---------------------------------- */
 .form-container {
     max-width: 400px;
@@ -334,7 +376,7 @@ footer {
 }
 
 /* ---------------------------------- */
-/* НОВІ СТИЛІ ДЛЯ DASHBOARD (Кабінет) */
+/* 5. К А Б І Н Е Т (dashboard.html) */
 /* ---------------------------------- */
 .dashboard-container {
     max-width: 900px;
@@ -358,7 +400,7 @@ footer {
     flex-wrap: wrap; /* Для мобільних */
 }
 
-/* Ліва колонка - фото */
+/* --- Ліва колонка - фото --- */
 .profile-pic-container {
     flex: 1; /* Займає 1 частину */
     min-width: 250px;
@@ -377,34 +419,21 @@ footer {
     display: none; /* Ховаємо, поки не завантажиться */
 }
 
-/* КОНТЕЙНЕР ЗАГЛУШКИ: ДОДАНО position: relative */
 .profile-pic-placeholder {
     width: 200px;
     height: 200px;
     border-radius: 50%;
     background-color: #101010;
     border: 4px dashed var(--color-secondary);
-    
-    position: relative; /* Ключова зміна 1: для абсолютного позиціювання SVG */
     display: flex;
     justify-content: center;
     align-items: center;
 }
-
-/* ВИПРАВЛЕННЯ ЦЕНТРУВАННЯ SVG: ВИКОРИСТАННЯ АБСОЛЮТНОГО ПОЗИЦІЮВАННЯ */
 .profile-pic-placeholder svg {
-    width: 80px; 
-    height: 80px;
+    /* --- ВИПРАВЛЕННЯ СТИЛЮ SVG --- */
+    width: 80px !important; 
+    height: 80px !important;
     color: var(--color-secondary);
-    
-    /* Ключова зміна 2: Абсолютне позиціювання для примусового центрування */
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    margin: auto; /* Додатковий спосіб центрування з абсолютним позиціюванням */
-    display: block; 
 }
 
 #upload-pic-button, #save-pic-button {
@@ -412,13 +441,13 @@ footer {
     margin-top: 15px;
 }
 
-/* Права колонка - інфо */
+/* --- Права колонка - інфо --- */
 .profile-info-container {
     flex: 2; /* Займає 2 частини, ширша */
     min-width: 300px;
 }
 
-/* Використовуємо ті ж стилі, що й для форм */
+/* (Використовуємо ті ж стилі, що й для форм) */
 .profile-info-container label {
     display: block;
     margin-bottom: 8px;
@@ -453,9 +482,9 @@ footer {
     font-size: 16px;
 }
 
-/* СТАТУС-ПОВІДОМЛЕННЯ (НОВЕ) */
+/* --- Статус-повідомлення (для JS) --- */
 .status-message {
-    margin: 10px 0 20px 0; /* Збільшуємо відступи */
+    margin: 10px 0 20px 0;
     padding: 10px;
     border-radius: 5px;
     text-align: center;
@@ -464,17 +493,99 @@ footer {
     border-style: solid;
 }
 .status-message.success {
-    background-color: rgba(30, 150, 60, 0.2); /* Темно-зелений прозорий */
-    color: #4CAF50; /* Світло-зелений текст */
+    background-color: rgba(30, 150, 60, 0.2); 
+    color: #4CAF50; 
     border-color: #4CAF50;
 }
 .status-message.error {
-    background-color: rgba(220, 50, 50, 0.2); /* Темно-червоний прозорий */
-    color: #F44336; /* Світло-червоний текст */
+    background-color: rgba(220, 50, 50, 0.2);
+    color: #F44336; 
     border-color: #F44336;
 }
 
-/* Responsive adjustments */
+/* ---------------------------------- */
+/* 6. СТИЛІ ДЛЯ ВИБОРУ РОЛІ (register.html) */
+/* ---------------------------------- */
+.role-selector {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+.role-selector input[type="radio"] {
+    display: none; /* Ховаємо стандартну радіо-кнопку */
+}
+.role-selector label {
+    display: block;
+    padding: 10px 15px;
+    border: 2px solid #3a3a3a;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+/* Стиль для обраної ролі */
+.role-selector input[type="radio"]:checked + label {
+    border-color: var(--color-primary);
+    background-color: rgba(224, 202, 154, 0.1);
+    color: var(--color-primary);
+}
+
+
+/* ---------------------------------- */
+/* 7. СТИЛІ ДЛЯ ПАНЕЛІ ПРОДАВЦЯ (dashboard.html) */
+/* ---------------------------------- */
+.seller-panel {
+    background-color: #101010; /* Трохи світліший фон */
+    padding: 30px;
+    margin-bottom: 40px;
+    border-radius: 10px;
+    border: 1px solid #2a2a2a;
+}
+.seller-panel h2 {
+    text-align: center;
+    margin-top: 0;
+}
+.seller-panel h3 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 24px;
+}
+/* Використовуємо стилі, схожі на .profile-info-container */
+.seller-panel label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: var(--color-secondary);
+    font-size: 14px;
+}
+.seller-panel input[type="text"],
+.seller-panel input[type="number"],
+.seller-panel textarea {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 20px;
+    border: 1px solid #3a3a3a;
+    border-radius: 5px;
+    box-sizing: border-box; 
+    background-color: #101010;
+    color: var(--color-text);
+    font-size: 16px;
+    font-family: var(--font-body);
+}
+.seller-panel textarea {
+    resize: vertical;
+}
+.seller-panel button {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+}
+
+
+/* ---------------------------------- */
+/* 9. АДАПТИВНІСТЬ (Media Queries) */
+/* ---------------------------------- */
 @media (max-width: 768px) {
     .profile-layout {
         flex-direction: column;
@@ -496,33 +607,4 @@ footer {
     .hero-slogan {
         font-size: 18px;
     }
-}
-/* ---------------------------------- */
-/* СТИЛІ ДЛЯ МАГАЗИНУ (shop.html) */
-/* ---------------------------------- */
-
-.product-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 20px;
-    padding-top: 15px;
-    border-top: 1px solid #2a2a2a;
-}
-
-.product-price {
-    font-size: 24px;
-    font-weight: bold;
-    color: var(--color-primary);
-    font-family: var(--font-title);
-}
-
-.buy-button {
-    padding: 8px 15px;
-    font-size: 14px;
-    margin-left: 0; /* Скидаємо відступ */
-}
-/* --- ФІКС ВІДСТУПУ КНОПОК В НАВІГАЦІЇ --- */
-.nav-links .button:first-child {
-  margin-left: 0;
 }
