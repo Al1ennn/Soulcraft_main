@@ -1000,3 +1000,68 @@ select:focus {
     font-family: var(--font-title);
     color: var(--color-primary);
 }
+/* ---------------------------------- */
+/* 16. СТИЛІ ДЛЯ CHECKOUT (checkout.html) */
+/* ---------------------------------- */
+
+.checkout-container {
+    display: flex;
+    gap: 40px;
+    max-width: 900px;
+    /* Використовуємо загальний відступ для "контейнерів" */
+    margin: 120px auto 50px auto; 
+    flex-wrap: wrap; /* Для мобільних */
+}
+
+/* Колонка з формою */
+.checkout-form-col {
+    flex: 2; /* Форма займає 2/3 */
+    min-width: 300px;
+    /* Перевикористовуємо .form-container, але скидаємо йому margin, 
+       бо він вже є в .checkout-container */
+    margin-top: 0; 
+    max-width: none; 
+}
+
+/* Колонка з підсумком замовлення */
+.checkout-summary-col {
+    flex: 1; /* Сума займає 1/3 */
+    min-width: 250px;
+    background-color: var(--color-surface);
+    padding: 20px;
+    border-radius: 10px;
+    border: 1px solid #2a2a2a;
+    height: fit-content; /* Висота по вмісту */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.checkout-summary-col h3 {
+    margin-top: 0;
+    border-bottom: 1px solid var(--color-primary);
+    padding-bottom: 10px;
+}
+
+.summary-total {
+    font-size: 24px;
+    font-family: var(--font-title);
+    color: var(--color-primary);
+    margin-top: 15px;
+}
+
+/* Стилі для радіо-кнопок оплати */
+.payment-options label {
+    display: block;
+    padding: 15px;
+    border: 1px solid #3a3a3a;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+.payment-options input[type="radio"] {
+    display: none; /* Ховаємо стандартну кнопку */
+}
+.payment-options input[type="radio"]:checked + label {
+    border-color: var(--color-primary);
+    background-color: rgba(224, 202, 154, 0.1);
+}
