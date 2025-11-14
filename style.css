@@ -684,7 +684,7 @@ footer {
 /* Налаштовуємо нашу нову кнопку всередині */
 #custom-file-button {
     margin: 0; /* Прибираємо зайвий відступ у кнопки */
-    /* Вона автоматично підхопить стилі з .button */
+    width: auto;
 }
 
 .file-input::file-selector-button:hover {
