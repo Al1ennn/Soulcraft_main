@@ -325,7 +325,6 @@ footer {
 
 /* ========= ПОЧАТОК ВИПРАВЛЕННЯ ========= */
 
-/* (Стилі для всіх полів вводу) */
 .form-container input[type="email"],
 .form-container input[type="password"],
 .form-container input[type="text"],
@@ -340,7 +339,7 @@ footer {
     color: var(--color-text);
     font-size: 16px;
 }
-/* (ЗАЙВУ ДУЖКУ `}` ЗВІДСИ ВИДАЛЕНО) */
+/* (ЗАЙВА ДУЖКА `}` ЗВІДСИ ВИДАЛЕНА) */
 
 
 /* (ОНОВЛЕНО: Додано :focus для text і tel) */
@@ -878,7 +877,7 @@ select:focus {
 }
 
 /* ---------------------------------- */
-/* 13. СТИЛІ ДЛЯ ІСТОРІЇ ТОВАРУ (product.html) */
+/* 13. СТИЛІ ДЛЯ ІСТОРІЇ ТОВАРU (product.html) */
 /* ---------------------------------- */
 
 #product-story-container {
