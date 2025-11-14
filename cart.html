@@ -36,7 +36,7 @@
         
         <div id="cart-summary" class="cart-total-summary" style="display: none;">
             <span id="cart-total-price">Загальна сума: 0 грн</span>
-            <button class="button button-primary">Оформити замовлення</button>
+            <button class="button button-primary" id="checkout-button">Оформити замовлення</button>
         </div>
         
     </main>
@@ -197,7 +197,67 @@
             });
         }
         
-        // (Запускаємо завантаження ТІЛЬКИ з onAuthStateChanged, коли впевнені, що користувач залогінений)
+       // --- 5. ЛОГІКА ОФОРМЛЕННЯ ЗАМОВЛЕННЯ ---
+    
+    const checkoutButton = document.getElementById('checkout-button');
+    
+    // Перевіряємо, чи існує кнопка, перш ніж додати слухача
+    if (checkoutButton) {
+        checkoutButton.addEventListener('click', async () => {
+            const user = auth.currentUser;
+
+            // 1. Базові перевірки
+            if (!user || !user.emailVerified) {
+                alert("Будь ласка, увійдіть (та підтвердіть пошту), щоб оформити замовлення.");
+                return;
+            }
+
+            const productIds = getCartProductIds(); // Використовуємо твою існуючу функцію
+            
+            if (productIds.length === 0) {
+                alert("Ваша корзина порожня. Неможливо оформити замовлення.");
+                return;
+            }
+            
+            // 2. Підтвердження
+            // (totalPrice - це твоя глобальна змінна, яка вже підрахована на сторінці)
+            const isConfirmed = confirm(`Ви впевнені, що хочете оформити замовлення на суму ${totalPrice} грн?`);
+            
+            if (!isConfirmed) {
+                return; // Користувач натиснув "Скасувати"
+            }
+
+            // 3. Блокуємо кнопку на час запиту
+            checkoutButton.textContent = "Обробка...";
+            checkoutButton.disabled = true;
+
+            try {
+                // 4. Створюємо новий документ в колекції 'orders'
+                await db.collection('orders').add({
+                    buyerId: user.uid,              // ID покупця
+                    productIds: productIds,         // Масив ID товарів
+                    totalPrice: totalPrice,         // Загальна сума
+                    status: "new",                  // Статус (наприклад, "нове", "в обробці")
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp() // Дата
+                });
+
+                // 5. Успішне завершення
+                localStorage.removeItem('soulcraftCart'); // Очищуємо локальну корзину
+                
+                alert("Дякуємо! Ваше замовлення успішно оформлено. Ми скоро з вами зв'яжемося.");
+                
+                // Перекидаємо користувача в його кабінет
+                window.location.href = 'dashboard.html'; 
+
+            } catch (error) {
+                console.error("Помилка оформлення замовлення: ", error);
+                alert("Сталася помилка при оформленні замовлення. Спробуйте ще раз.");
+                // Розблокуємо кнопку, якщо сталася помилка
+                checkoutButton.textContent = "Оформити замовлення";
+                checkoutButton.disabled = false;
+            }
+        });
+    }
 
     </script>
 </body>
