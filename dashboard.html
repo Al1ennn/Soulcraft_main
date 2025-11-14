@@ -340,6 +340,26 @@
                 }
             });
         }
+        // --- ЛОГІКА ДЛЯ "ФЕЙКОВОЇ" КНОПКИ ЗАВАНТАЖЕННЯ ---
+        if (customFileButton) {
+            // 1. Коли тиснеш на нашу кнопку...
+            customFileButton.addEventListener('click', () => {
+                productImageFileInput.click(); // ...ми клікаємо на справжній інпут
+            });
+
+            // 2. Коли в справжньому інпуті з'явився файл...
+            productImageFileInput.addEventListener('change', () => {
+                if (productImageFileInput.files.length > 0) {
+                    // ...ми показуємо його ім'я
+                    customFileText.textContent = productImageFileInput.files[0].name;
+                    customFileText.style.color = 'var(--color-text)'; // Робимо текст яскравішим
+                } else {
+                    // ...або повертаємо стандартний текст
+                    customFileText.textContent = 'Файл не вибрано';
+                    customFileText.style.color = 'var(--color-secondary)';
+                }
+            });
+        }
         
         // 6. ЛОГІКА ДЛЯ ВКЛАДОК
         tabButtons.forEach(button => {
