@@ -88,12 +88,14 @@
                     </select>
                     <label for="product-price">Ціна (у грн)</label>
                     <input type="number" id="product-price" required>
-                    <label for="product-image-file">Фото товару</label>
-                    <input type="file" id="product-image-file" class="file-input" accept="image/png, image/jpeg" required>
-                    <button type="submit" class="button button-primary" id="add-product-button">Додати товар</button>
-                </form>
-            </section>
-        </div>
+                   <label for="product-image-file">Фото товару</label>
+
+<input type="file" id="product-image-file" accept="image/png, image/jpeg" required style="display: none;">
+
+<div class="custom-file-input">
+    <button type="button" class="button" id="custom-file-button">Вибрати файл</button>
+    <span id="custom-file-text">Файл не вибрано</span>
+</div>
 
     </main>
 
