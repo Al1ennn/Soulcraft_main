@@ -90,12 +90,15 @@
                     <input type="number" id="product-price" required>
                    <label for="product-image-file">Фото товару</label>
 
-<input type="file" id="product-image-file" accept="image/png, image/jpeg" required style="display: none;">
-
-<div class="custom-file-input">
-    <button type="button" class="button" id="custom-file-button">Вибрати файл</button>
-    <span id="custom-file-text">Файл не вибрано</span>
-</div>
+<form id="add-product-form">
+    <label for="product-image-file">Фото товару</label>
+    <div class="custom-file-input">
+        <button type="button" class="button" id="custom-file-button">Вибрати файл</button>
+        <span id="custom-file-text">Файл не вибрано</span>
+    </div>
+    
+    <button type="submit" class="button button-primary" id="add-product-button">Додати товар</button>
+</form>
 
     </main>
 
