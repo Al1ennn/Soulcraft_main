@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Оформлення замовлення - SoulCraft</title>
+    <link rel="stylesheet" href="style.css">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Lato:wght@300;400&display=swap" rel="stylesheet">
+   
+</head>
+<body>
+
+    <header>
+        <nav>
+            <a href="index.html" class="button">На головну</a>
+            <div class="nav-links">
+                <a href="shop.html" class="button">Магазин</a>
+                <a href="dashboard.html" class="button button-primary" id="dashboard-link" style="display: none;">Кабінет</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="content-section">
+        <div class="checkout-container">
+            
+            <div class="checkout-form-col form-container">
+                <h1>Оформлення замовлення</h1>
+                <form id="checkout-form">
+                    <h3>Контактні дані</h3>
+                    <label for="checkout-name">Ваше повне ім'я</label>
+                    <input type="text" id="checkout-name" placeholder="Іванов Іван Іванович" required>
+
+                    <label for="checkout-phone">Номер телефону</label>
+                    <input type="tel" id="checkout-phone" placeholder="+380..." required>
+
+                    <h3>Доставка</h3>
+                    <label for="checkout-city">Місто</label>
+                    <input type="text" id="checkout-city" placeholder="Наприклад, Львів" required>
+                    
+                    <label for="checkout-post">Відділення "Нової Пошти" (або адреса)</label>
+                    <input type="text" id="checkout-post" placeholder="Відділення №5 або вул. Миру, 10" required>
+
+                    <h3>Оплата</h3>
+                    <div class="payment-options">
+                        <input type="radio" id="pay-on-delivery" name="payment" value="on_delivery" checked required>
+                        <label for="pay-on-delivery">Оплата при отриманні</label>
+                        
+                        <input type="radio" id="pay-card" name="payment" value="card" disabled>
+                        <label for="pay-card" style="opacity: 0.5; cursor: not-allowed;">Оплата карткою (в розробці)</label>
+                    </div>
+
+                    <button type="submit" class="button button-primary" id="confirm-order-btn" style="width: 100%; margin-top: 20px; padding: 15px;">
+                        Підтвердити замовлення
+                    </button>
+                </form>
+            </div>
+
+            <div class="checkout-summary-col">
+                <h3>Ваше замовлення</h3>
+                <div id="summary-items">
+                    <p>Завантаження...</p>
+                </div>
+                <div class="summary-total" id="summary-total">
+                    Загальна сума: ...
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 SoulCraft. Усі права захищені.</p>
+    </footer>
+
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+
+    <script>
+        // ВАШІ КЛЮЧІ
+        const firebaseConfig = {
+          apiKey: "AIzaSyDI1y9z3JqGwjOYacWsHZgPhU038YBz9pA",
+          authDomain: "soulcraft-project.firebaseapp.com",
+          projectId: "soulcraft-project",
+          storageBucket: "soulcraft-project.firebasestorage.app",
+          messagingSenderId: "442181022403",
+          appId: "1:442181022403:web:590c4523ebcc12213c2876"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // Елементи сторінки
+        const summaryItems = document.getElementById('summary-items');
+        const summaryTotal = document.getElementById('summary-total');
+        const checkoutForm = document.getElementById('checkout-form');
+        const confirmBtn = document.getElementById('confirm-order-btn');
+        const dashboardLink = document.getElementById('dashboard-link');
+
+        let checkoutData = {};
+        let currentUser = null;
+
+        // 1. Головна функція при завантаженні
+        auth.onAuthStateChanged(user => {
+            if (user && user.emailVerified) {
+                // Користувач увійшов
+                currentUser = user;
+                dashboardLink.style.display = 'inline-block';
+                loadCheckoutData();
+            } else {
+                // Не увійшов - відправляємо на логін
+                alert("Будь ласка, увійдіть, щоб оформити замовлення.");
+                window.location.href = 'login.html';
+            }
+        });
+
+        // 2. Завантажуємо дані, які ми зберегли в cart.html
+        function loadCheckoutData() {
+            // Беремо дані з localStorage
+            const data = localStorage.getItem('soulcraftCheckout');
+            if (!data) {
+                alert("Помилка: не знайдено даних про замовлення. Повертаємо вас в корзину.");
+                window.location.href = 'cart.html';
+                return;
+            }
+            
+            checkoutData = JSON.parse(data);
+            
+            // Відображаємо суму
+            summaryTotal.textContent = `Загальна сума: ${checkoutData.totalPrice} грн`;
+            
+            // Відображаємо кількість товарів
+            summaryItems.innerHTML = `Кількість товарів: <strong>${checkoutData.productIds.length}</strong>`;
+            // (Тут можна зробити складніший запит, щоб отримати назви товарів, але для MVP це не обов'язково)
+        }
+        
+        // 3. Обробник відправки форми
+        checkoutForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            if (!currentUser || !checkoutData.productIds) {
+                alert("Сталася помилка. Спробуйте оновити сторінку.");
+                return;
+            }
+
+            // Збираємо дані з форми
+            const shippingInfo = {
+                name: document.getElementById('checkout-name').value,
+                phone: document.getElementById('checkout-phone').value,
+                city: document.getElementById('checkout-city').value,
+                postOffice: document.getElementById('checkout-post').value
+            };
+            const paymentMethod = document.querySelector('input[name="payment"]:checked').value;
+
+            // Блокуємо кнопку
+            confirmBtn.textContent = "Обробка...";
+            confirmBtn.disabled = true;
+
+            try {
+                // Створюємо замовлення (правила безпеки ми вже налаштували)
+                await db.collection('orders').add({
+                    buyerId: currentUser.uid,
+                    productIds: checkoutData.productIds,
+                    totalPrice: checkoutData.totalPrice,
+                    status: "new",
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    
+                    shippingInfo: shippingInfo, // Додаємо повну інфо про доставку
+                    paymentMethod: paymentMethod // Додаємо метод оплати
+                });
+
+                // Чистимо localStorage
+                localStorage.removeItem('soulcraftCart'); // Головну корзину
+                localStorage.removeItem('soulcraftCheckout'); // Тимчасові дані
+                
+                alert("Дякуємо! Ваше замовлення успішно оформлено.");
+                window.location.href = 'dashboard.html'; // Перекидаємо в кабінет
+
+            } catch (error) {
+                console.error("Помилка створення замовлення:", error);
+                alert("Сталася помилка. Спробуйте ще раз.");
+                confirmBtn.textContent = "Підтвердити замовлення";
+                confirmBtn.disabled = false;
+            }
+        });
+    </script>
+
+</body>
+</html>
