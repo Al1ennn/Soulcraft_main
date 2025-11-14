@@ -874,3 +874,42 @@ select:focus {
     height: 100px; /* Висота поля */
     resize: vertical; /* Дозволяємо тягнути */
 }
+/* ---------------------------------- */
+/* 14. СТИЛЬ ДЛЯ ЛІЧИЛЬНИКА КОРЗИНИ */
+/* ---------------------------------- */
+
+/* Стиль для кнопки "Корзина", щоб значок був поверх неї */
+#cart-link {
+    position: relative; /* Обов'язково для позиціонування значка */
+    padding-right: 25px; /* Додаємо місце, щоб текст не заходив під значок */
+}
+
+.cart-count-badge {
+    display: flex; /* Для центрування цифри */
+    justify-content: center;
+    align-items: center;
+
+    background-color: var(--color-primary); /* Золотий фон */
+    color: var(--color-bg); /* Темний текст */
+    
+    font-size: 12px;
+    font-weight: bold;
+    font-family: var(--font-body); /* Чіткий шрифт для цифр */
+    
+    /* Розміри */
+    min-width: 18px; /* Мінімальна ширина */
+    height: 18px;
+    padding: 2px;
+    box-sizing: border-box; 
+    
+    /* --- Ось твій "квадратик" --- */
+    border-radius: 5px; 
+    /* (Якщо захочеш ідеально круглий, постав 50%) */
+
+    /* --- Позиціонування --- */
+    position: absolute; /* Позиціонуємо поверх кнопки */
+    top: -5px;          /* Трохи вище */
+    right: -5px;        /* І в правий кут */
+    
+    border: 1px solid var(--color-bg); /* Обводка кольором фону */
+}
