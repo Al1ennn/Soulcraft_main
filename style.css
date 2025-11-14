@@ -325,6 +325,7 @@ footer {
 
 /* ========= ПОЧАТОК ВИПРАВЛЕННЯ ========= */
 
+/* (Стилі для всіх полів вводу) */
 .form-container input[type="email"],
 .form-container input[type="password"],
 .form-container input[type="text"],
@@ -877,7 +878,7 @@ select:focus {
 }
 
 /* ---------------------------------- */
-/* 13. СТИЛІ ДЛЯ ІСТОРІЇ ТОВАРU (product.html) */
+/* 13. СТИЛІ ДЛЯ ІСТОРІЇ ТОВАРУ (product.html) */
 /* ---------------------------------- */
 
 #product-story-container {
@@ -1043,7 +1044,7 @@ select:focus {
 .checkout-form-col {
     flex: 2; /* Форма займає 2/3 */
     min-width: 300px;
-    /* Перевикористовуємо .form-container, але скидаємо йому margin, 
+    /* Перевикористовуємо .form-container, але скидаємо йому margin,s
        бо він вже є в .checkout-container */
     margin-top: 0; 
     max-width: none; 
@@ -1080,9 +1081,9 @@ select:focus {
     padding: 15px;
     border: 1px solid #3a3a3a;
     border-radius: 5px;
-    margin-bottom: 10px;
+  s   margin-bottom: 10px;
     cursor: pointer;
-    transition: all 0.3s ease;
+s     transition: all 0.3s ease;
 }
 .payment-options input[type="radio"] {
     display: none; /* Ховаємо стандартну кнопку */
