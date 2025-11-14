@@ -88,15 +88,22 @@
                     </select>
                     <label for="product-price">Ціна (у грн)</label>
                     <input type="number" id="product-price" required>
-                    <<label for="product-image-file">Фото товару</label>
+                    
+                    <label for="product-image-file">Фото товару</label>
+
+                    <input type="file" id="product-image-file" accept="image/*" required style="display: none;">
+
                     <div class="custom-file-input">
-         <button type="button" class="button" id="custom-file-button">Вибрати файл</button>
-        <span id="custom-file-text">Файл не вибрано</span>
-    </div>
-    
-    <button type="submit" class="button button-primary" id="add-product-button">Додати товар</button>
-</form>
-    
+                        <button type="button" class="button" id="custom-file-button">Вибрати файл</button>
+                        <span id="custom-file-text">Файл не вибрано</span>
+                    </div>
+                    
+                    <button type="submit" class="button button-primary" id="add-product-button">Додати товар</button>
+                </form>
+                
+                </section> 
+        
+        </div> 
 
     </main>
 
@@ -121,7 +128,7 @@
         const db = firebase.firestore();
         const storage = firebase.storage();
 
-        // (Отримуємо всі елементи ... код не змінився)
+        // (Отримуємо всі елементи)
         const emailDisplay = document.getElementById('email-display');
         const nameInput = document.getElementById('name');
         const cityInput = document.getElementById('city');
@@ -140,18 +147,19 @@
         const tabButtons = document.querySelectorAll('.tab-button');
         const tabContents = document.querySelectorAll('.tab-content');
         const sellerTabButton = document.getElementById('seller-tab-button');
+        
+        // (Отримуємо елементи для кастомної кнопки файлу)
         const productImageFileInput = document.getElementById('product-image-file');
         const customFileButton = document.getElementById('custom-file-button');
         const customFileText = document.getElementById('custom-file-text');
         
-        // --- ОНОВЛЕНО: Елементи навігації ---
         const cartLink = document.getElementById('cart-link');
         const cartCountBadge = document.getElementById('cart-count');
 
         let currentUser = null; 
         let selectedFile = null; 
 
-        // --- НОВА ФУНКЦІЯ: ОНОВЛЕННЯ ЛІЧИЛЬНИКА КОРЗИНИ ---
+        // --- ОНОВЛЕННЯ ЛІЧИЛЬНИКА КОРЗИНИ ---
         function updateCartCount() {
             const cart = JSON.parse(localStorage.getItem('soulcraftCart')) || [];
             if (cart.length > 0) {
@@ -162,9 +170,8 @@
             }
         }
 
-        // Функція для показу повідомлень
+        // --- Функція для показу повідомлень ---
         function showStatus(element, message, type) {
-            // ... (Код не змінився)
             element.textContent = message;
             element.className = 'status-message ' + type;
             element.style.display = 'block';
@@ -173,19 +180,18 @@
             }
         }
 
-        // ГОЛОВНА ФУНКЦІЯ (АВТЕНТИФІКАЦІЯ)
+        // --- ГОЛОВНА ФУНКЦІЯ (АВТЕНТИФІКАЦІЯ) ---
         auth.onAuthStateChanged((user) => {
             if (user) {
                 currentUser = user;
                 loadUserProfile(user.uid, user.email);
                 
-                // --- ОНОВЛЕНО: Перевірка верифікації ---
                 if (user.emailVerified) {
-                    cartLink.style.display = 'inline-flex'; // ПОКАЗУЄМО КОРЗИНУ
-                    updateCartCount(); // Оновлюємо лічильник
+                    cartLink.style.display = 'inline-flex';
+                    updateCartCount();
                 } else {
                     alert("Ваш акаунт ще не активовано. Будь ласка, підтвердіть пошту.");
-                    cartLink.style.display = 'none'; // ХОВАЄМО КОРЗИНУ
+                    cartLink.style.display = 'none';
                 }
                 
             } else {
@@ -194,9 +200,8 @@
             }
         });
 
-        // 1. ЗАВАНТАЖЕННЯ ДАНИХ
+        // --- 1. ЗАВАНТАЖЕННЯ ДАНИХ ---
         async function loadUserProfile(uid, email) {
-            // ... (Код не змінився)
             emailDisplay.value = email;
             const userDocRef = db.collection('users').doc(uid);
             const doc = await userDocRef.get();
@@ -217,14 +222,14 @@
                     sellerTabButton.style.display = 'inline-block';
                 }
             } else {
+                // (Якщо раптом документа немає, створюємо)
                 userDocRef.set({ name: '', city: '', phone: '' }); 
                 profilePicPlaceholder.style.display = 'block';
             }
         }
 
-        // 2. ЗБЕРЕЖЕННЯ ДАНИХ ПРОФІЛЮ
+        // --- 2. ЗБЕРЕЖЕННЯ ДАНИХ ПРОФІЛЮ ---
         profileForm.addEventListener('submit', async (e) => {
-            // ... (Код не змінився, але додана перевірка)
             e.preventDefault();
             if (!currentUser) return;
             if (!currentUser.emailVerified) {
@@ -244,10 +249,9 @@
              }
         });
 
-        // 3. ЛОГІКА ЗАВАНТАЖЕННЯ ФОТО
+        // --- 3. ЛОГІКА ЗАВАНТАЖЕННЯ ФОТО ПРОФІЛЮ ---
         uploadPicButton.addEventListener('click', () => photoUploadInput.click());
         photoUploadInput.addEventListener('change', (e) => {
-            // ... (Код не змінився)
             selectedFile = e.target.files[0];
             if (selectedFile) {
                 const reader = new FileReader();
@@ -261,12 +265,11 @@
             }
         });
         savePicButton.addEventListener('click', async () => {
-             // ... (Код не змінився, але додана перевірка)
              if (!currentUser || !selectedFile) return;
              if (!currentUser.emailVerified) {
                 showStatus(generalStatusDiv, "Для завантаження фото спочатку підтвердіть свою пошту.", 'error');
                 return;
-            }
+           }
              savePicButton.textContent = "Завантаження...";
              const storageRef = storage.ref(`profile_pics/${currentUser.uid}`);
              try {
@@ -281,19 +284,17 @@
              }
         });
 
-
-        // 4. ВИХІД
+        // --- 4. ВИХІД ---
         logoutButton.addEventListener('click', () => {
             auth.signOut().then(() => {
-                localStorage.removeItem('soulcraftCart'); // Очищуємо корзину при виході
+                localStorage.removeItem('soulcraftCart');
                 window.location.href = 'index.html';
             }).catch((error) => console.error("Помилка виходу: ", error));
         });
         
-        // 5. ЛОГІКА ДОДАВАННЯ ТОВАРУ
+        // --- 5. ЛОГІКА ДОДАВАННЯ ТОВАРУ ---
         if (addProductForm) {
             addProductForm.addEventListener('submit', async (e) => {
-                // ... (Код не змінився)
                 e.preventDefault();
                 if (!currentUser) return;
 
@@ -302,7 +303,9 @@
                 const productStory = document.getElementById('product-story').value;
                 const productCategory = document.getElementById('product-category').value;
                 const productPrice = Number(document.getElementById('product-price').value);
-                const imageFile = document.getElementById('product-image-file').files[0];
+                
+                // (Отримуємо файл зі схованого інпута)
+                const imageFile = productImageFileInput.files[0]; 
 
                 if (!productName || !productDesc || !productPrice || !imageFile || !productCategory) {
                     showStatus(generalStatusDiv, "Будь ласка, заповніть всі обов'язкові поля", 'error');
@@ -331,6 +334,9 @@
                     
                     showStatus(generalStatusDiv, "Товар успішно додано! Він з'явиться в магазині після перевірки.", 'success');
                     addProductForm.reset();
+                    // (Скидаємо текст фейкової кнопки)
+                    customFileText.textContent = 'Файл не вибрано';
+                    customFileText.style.color = 'var(--color-secondary)';
                     
                 } catch (error) {
                     console.error("Помилка додавання товару: ", error);
@@ -341,30 +347,26 @@
                 }
             });
         }
-        // --- ЛОГІКА ДЛЯ "ФЕЙКОВОЇ" КНОПКИ ЗАВАНТАЖЕННЯ ---
+
+        // --- 6. ЛОГІКА ДЛЯ "ФЕЙКОВОЇ" КНОПКИ ЗАВАНТАЖЕННЯ ---
         if (customFileButton) {
-            // 1. Коли тиснеш на нашу кнопку...
             customFileButton.addEventListener('click', () => {
-                productImageFileInput.click(); // ...ми клікаємо на справжній інпут
+                productImageFileInput.click(); 
             });
 
-            // 2. Коли в справжньому інпуті з'явився файл...
             productImageFileInput.addEventListener('change', () => {
                 if (productImageFileInput.files.length > 0) {
-                    // ...ми показуємо його ім'я
                     customFileText.textContent = productImageFileInput.files[0].name;
-                    customFileText.style.color = 'var(--color-text)'; // Робимо текст яскравішим
+                    customFileText.style.color = 'var(--color-text)';
                 } else {
-                    // ...або повертаємо стандартний текст
                     customFileText.textContent = 'Файл не вибрано';
                     customFileText.style.color = 'var(--color-secondary)';
                 }
             });
         }
         
-        // 6. ЛОГІКА ДЛЯ ВКЛАДОК
+        // --- 7. ЛОГІКА ДЛЯ ВКЛАДОК ---
         tabButtons.forEach(button => {
-            // ... (Код не змінився)
             button.addEventListener('click', () => {
                 tabButtons.forEach(btn => btn.classList.remove('active'));
                 button.classList.add('active');
