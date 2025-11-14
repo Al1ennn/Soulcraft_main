@@ -339,7 +339,9 @@ footer {
 }
 
 .form-container input[type="email"]:focus,
-.form-container input[type="password"]:focus {
+.form-container input[type="password"]:focus,
+.form-container input[type="text"]:focus,
+.form-container input[type="tel"]:focus {
     border-color: var(--color-primary);
     outline: none;
     box-shadow: 0 0 10px rgba(224, 202, 154, 0.2);
